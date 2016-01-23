@@ -52,7 +52,7 @@ def print_path(states):
         print "P: ", s.packages, "D: ", s.drivers
 
 if __name__ == '__main__':
-    problem = pg.get_problem(3, 1, 1, 1)
+    problem = pg.get_problem(2, 1, 1, 1)
     goal_state = problem.goal_state
     h = partial(h1, goal_state)
     t = partial(transition, problem.graph)

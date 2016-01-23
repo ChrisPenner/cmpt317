@@ -20,8 +20,8 @@ class Searcher(object):
         self.transition_function = transition_function
         self.cost_function = cost_function
         self.data_structure = data_structure
+        self.data_structure.add(start_state)
         self.goal_state = goal_state
-        self.current_state = start_state
         self.total_cost = 0
         self.track_states = track_states
         if self.track_states:
@@ -31,6 +31,7 @@ class Searcher(object):
         """
         Run the actual Search
         """
+        self.current_state = self.data_structure.next()
         while self.current_state != self.goal_state:
             # Get all possible next states
             next_states = self.transition_function(self.current_state)
