@@ -7,9 +7,6 @@ Point = namedtuple('Point', ['x', 'y'])
 NKP = namedtuple('NKP', ['grid', 'packages', 'destinations', 'drivers', 'garage', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
 
-def _get_random_point(grid):
-    return Point(*random.choice(grid.nodes()))
-
 def get_problem(size, n, k, p):
     """
     :size: The size of the grid will be size x size
@@ -17,17 +14,21 @@ def get_problem(size, n, k, p):
     :k: the number of packages
     :p: the carrying capacity of each driver
     """
-    grid = m.makeMap(size, size, 0.1) # width, height, gap frequency
+    graph = m.makeMap(size, size, 0.1) # width, height, gap frequency
     packages = {}
     destinations = {}
     drivers = {}
-    rp = partial(_get_random_point, grid)
 
+    # Random point generator (within bounds)
+    random_point = partial(random.choice, graph.nodes())
+
+    # Assign packages and their destinations randomly
     for i in xrange(k):
-        packages[i] = rp()
-        destinations[i] = rp()
+        packages[i] = random_point()
+        destinations[i] = random_point()
 
-    garage = rp()
+    garage = random_point()
+    # All drivers start at the garage
     for i in xrange(n):
         drivers[i] = garage
 
@@ -37,13 +38,13 @@ def get_problem(size, n, k, p):
     )
 
     goal_state = State(
-        # Package end state is just destinations
+        # Each package's end state is just their destinations
         packages=destinations.copy(),
         drivers={ k:garage for k in drivers.iterkeys()}
     )
 
     return NKP(
-        grid,
+        graph,
         packages,
         destinations,
         drivers,
