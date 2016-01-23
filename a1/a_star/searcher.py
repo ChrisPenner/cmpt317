@@ -24,6 +24,9 @@ class Search(object):
             next_cost, self.current_state = self.data_structure.next()
             self.total_cost += next_cost
             if self.track_states:
-                self.states.append(current_state)
+                self.states.append(self.current_state)
 
-        return self.total_cost
+        if self.track_states:
+            return self.total_cost, self.states
+        else:
+            return self.total_cost

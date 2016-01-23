@@ -36,13 +36,13 @@ def get_problem(size, n, k, p):
     garage = rp()
 
     start_state = State(
-        packages=packages,
-        drivers=drivers,
+        packages=frozenset(packages),
+        drivers=frozenset(drivers),
     )
 
     goal_state = State(
-        packages=set(Package(*d) for d in destinations),
-        drivers=set(Driver(i, garage) for i in xrange(n)),
+        packages=frozenset(Package(*d) for d in destinations),
+        drivers=frozenset(Driver(i, garage) for i in xrange(n)),
     )
 
     return NKP(
