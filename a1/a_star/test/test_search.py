@@ -1,5 +1,5 @@
 import unittest
-from ..searcher import Search
+from ..searcher import Searcher
 
 
 class TestSearch(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestSearch(unittest.TestCase):
 
     def test_raises_exception_if_missing_args(self):
         with self.assertRaises(TypeError):
-            Search()
+            Searcher()
 
         with self.assertRaises(TypeError):
-            Search(transition_function=True, data_structure=True, goal_state=True)
+            Searcher(transition_function=True, data_structure=True, goal_state=True)
