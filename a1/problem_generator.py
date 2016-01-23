@@ -44,11 +44,11 @@ def get_problem(size, n, k, p):
     )
 
     return NKP(
-        graph,
-        packages,
-        destinations,
-        drivers,
-        garage,
-        start_state,
-        goal_state
+        graph=graph,
+        packages=packages,
+        destinations=destinations,
+        drivers=drivers,
+        garage=garage,
+        start_state=start_state,
+        goal_state=goal_state,
     )

@@ -28,7 +28,7 @@ def transition(graph, state):
                     yield State(packages=altered_packages, drivers=altered_drivers)
 
 def cost_of_transition(start_state, dest_state):
-    # Assume all are cost 1
+    # Assume all costs are 1 for now
     return 1
 
 def h1(goal_state, current_state):
@@ -44,8 +44,13 @@ def h1(goal_state, current_state):
     return total
 
 def hash_state(state):
+    """
+    Turns the state object (which uses dicts) into a tuple of frozensets 
+    (which can be hashed) so we can store it and check for repetition in O(1)
+    within the heap.
+    """
     freeze = lambda x: frozenset(x.iteritems())
-    return tuple(map(freeze, state))
+    return tuple(freeze(x) for x in state)
 
 def print_path(states):
     for s in states:
@@ -53,15 +58,16 @@ def print_path(states):
 
 if __name__ == '__main__':
     problem = pg.get_problem(2, 1, 1, 1)
-    goal_state = problem.goal_state
-    h = partial(h1, goal_state)
+    h = partial(h1, problem.goal_state)
     t = partial(transition, problem.graph)
-    s = Searcher(transition_function=t,
-               cost_function=cost_of_transition,
-               data_structure=Heap(heuristic=h, hash_state=hash_state),
-               start_state=problem.start_state,
-               goal_state=problem.goal_state,
-               track_states=True
+    heap = Heap(heuristic=h, hash_state=hash_state)
+    s = Searcher(
+        transition_function=t,
+        cost_function=cost_of_transition,
+        data_structure=heap,
+        start_state=problem.start_state,
+        goal_state=problem.goal_state,
+        track_states=True,
     )
     cost, states = s()
     print "Start: ",
