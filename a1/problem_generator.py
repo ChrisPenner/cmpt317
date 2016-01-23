@@ -1,13 +1,17 @@
 import Map as m
-from random import randint
+import random
 from collections import namedtuple
+from functools import partial
 
-Package = namedtuple('Package', ['number', 'x', 'y'])
-Destination = namedtuple('Destination', ['number', 'x', 'y'])
-Garage = namedtuple('Garage', ['x', 'y'])
-Driver = namedtuple('Driver', ['number', 'x', 'y'])
+Point = namedtuple('Point', ['x', 'y'])
+Package = namedtuple('Package', ['number', 'point'])
+Destination = namedtuple('Destination', ['number', 'point'])
+Driver = namedtuple('Driver', ['number', 'point'])
 NKP = namedtuple('NKP', ['grid', 'packages', 'destinations', 'drivers', 'garage', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
+
+def _get_random_point(grid):
+    return Point(*random.choice(grid.nodes()))
 
 def get_problem(size, n, k, p):
     """
@@ -20,15 +24,16 @@ def get_problem(size, n, k, p):
     packages = set()
     destinations = set()
     drivers = set()
+    rp = partial(_get_random_point, grid)
 
     for i in xrange(k):
-        packages.add(Package(i, randint(0, size - 1), randint(0, size - 1)))
-        destinations.add(Destination(i, randint(0, size - 1), randint(0, size - 1)))
+        packages.add(Package(i, rp()))
+        destinations.add(Destination(i, rp()))
 
     for i in xrange(n):
-        drivers.add(Driver(i, randint(0, size - 1), randint(0, size - 1)))
+        drivers.add(Driver(i, rp()))
 
-    garage = Garage(randint(0, size - 1), randint(0, size - 1))
+    garage = rp()
 
     start_state = State(
         packages=packages,
@@ -37,7 +42,7 @@ def get_problem(size, n, k, p):
 
     goal_state = State(
         packages=set(Package(*d) for d in destinations),
-        drivers=set(Driver(i, garage.x, garage.y) for i in xrange(n)),
+        drivers=set(Driver(i, garage) for i in xrange(n)),
     )
 
     return NKP(
