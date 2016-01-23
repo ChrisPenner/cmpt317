@@ -21,7 +21,7 @@ class Search(object):
         while self.current_state != self.goal_state:
             next_states = self.transition_function(self.current_state)
             self.data_structure.extend(next_states)
-            next_cost, self.current_state = data_structure.next()
+            next_cost, self.current_state = self.data_structure.next()
             self.total_cost += next_cost
             if self.track_states:
                 self.states.append(current_state)
