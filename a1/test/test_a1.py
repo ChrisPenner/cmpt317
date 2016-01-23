@@ -1,8 +1,17 @@
 import unittest
-from ..a1 import _get_possible_movements, transition, h1
+from ..a1 import transition, h1
 from ..problem_generator import Point, State
+import networkx as nx
 
 from operator import itemgetter
+
+# Simple square graph
+graph_1 = nx.Graph(data=[
+    ((0,0),(0,1)),
+    ((0,0),(1,0)),
+    ((1,1),(0,1)),
+    ((1,1),(1,0)),
+])
 
 nodes_1 = [(0, 0), (1, 0), (0, 1), (1, 1)]
 packages_1 = { 0: (1, 1) }
@@ -16,10 +25,6 @@ state_2 = State(packages=packages_3, drivers=drivers_1)
 class TestA1(unittest.TestCase):
     def setUp(self):
         pass
-
-    def test_get_possible_movements(self):
-        expected = [(1, 0), (0, 1)]
-        self.assertItemsEqual(expected, _get_possible_movements(nodes_1, Point(0, 0)))
 
     def test_transition(self):
         self.maxDiff = None
@@ -44,7 +49,7 @@ class TestA1(unittest.TestCase):
         ]
         # Check if values are equal, ignoring costs right now
         # The itemgetter(1) gets only the value, ignoring cost
-        self.assertItemsEqual(expected, transition(nodes_1, state))
+        self.assertItemsEqual(expected, transition(graph_1, state))
 
     def test_h1_is_0_when_at_goal(self):
         self.assertEqual(0, h1(goal_1, goal_1))

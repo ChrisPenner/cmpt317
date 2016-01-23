@@ -4,23 +4,13 @@ from a_star.searcher import Searcher
 from a_star.containers import Heap
 from functools import partial
 
-def _get_possible_movements(nodes, point):
-    """
-    Return all possible nodes that can be reached in the graph given point p
-    """
-    x,y = point
-    return [p for p in [Point(x - 1, y), Point(x + 1, y),
-                        Point(x, y - 1), Point(x, y + 1)]
-            if p in nodes]
-
-def transition(nodes, state):
+def transition(graph, state):
     """
     Returns an iterable of all possible next states and the cost to move there
     of the form (cost, next_state)
-"""
-    possible_moves = partial(_get_possible_movements, nodes)
+    """
     for (d_num, d_point) in state.drivers.iteritems():
-        for new_driver_position in possible_moves(d_point):
+        for new_driver_position in graph.neighbors(d_point):
             # Get a all other drivers but the current one
             altered_drivers = state.drivers.copy()
             altered_drivers[d_num] = new_driver_position
@@ -62,11 +52,10 @@ def print_path(states):
         print "P: ", s.packages, "D: ", s.drivers
 
 if __name__ == '__main__':
-    problem = pg.get_problem(44, 1, 1, 1)
+    problem = pg.get_problem(3, 1, 1, 1)
     goal_state = problem.goal_state
     h = partial(h1, goal_state)
-    nodes = set(problem.grid.nodes())
-    t = partial(transition, nodes)
+    t = partial(transition, problem.graph)
     s = Searcher(transition_function=t,
                cost_function=cost_of_transition,
                data_structure=Heap(heuristic=h, hash_state=hash_state),
