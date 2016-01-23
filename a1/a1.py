@@ -1,6 +1,6 @@
 import problem_generator as pg
 from problem_generator import State, Point
-from a_star.searcher import Search
+from a_star.searcher import Searcher
 from a_star.containers import Heap
 from functools import partial
 
@@ -53,23 +53,25 @@ def h1(goal_state, current_state):
         total += abs(px - vx) + abs(py - vy)
     return total
 
-
+def hash_state(state):
+    freeze = lambda x: frozenset(x.iteritems())
+    return tuple(map(freeze, state))
 
 def print_path(states):
     for s in states:
         print "P: ", s.packages, "D: ", s.drivers
 
 if __name__ == '__main__':
-    problem = pg.get_problem(2, 1, 1, 1)
+    problem = pg.get_problem(44, 1, 1, 1)
     goal_state = problem.goal_state
     h = partial(h1, goal_state)
     nodes = set(problem.grid.nodes())
     t = partial(transition, nodes)
-    s = Search(transition_function=t,
+    s = Searcher(transition_function=t,
                cost_function=cost_of_transition,
-               data_structure=Heap(heuristic=h),
-               goal_state=problem.goal_state,
+               data_structure=Heap(heuristic=h, hash_state=hash_state),
                start_state=problem.start_state,
+               goal_state=problem.goal_state,
                track_states=True
     )
     cost, states = s()
