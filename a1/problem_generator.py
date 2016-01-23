@@ -4,9 +4,6 @@ from collections import namedtuple
 from functools import partial
 
 Point = namedtuple('Point', ['x', 'y'])
-Package = namedtuple('Package', ['number', 'point'])
-Destination = namedtuple('Destination', ['number', 'point'])
-Driver = namedtuple('Driver', ['number', 'point'])
 NKP = namedtuple('NKP', ['grid', 'packages', 'destinations', 'drivers', 'garage', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
 
@@ -21,28 +18,28 @@ def get_problem(size, n, k, p):
     :p: the carrying capacity of each driver
     """
     grid = m.makeMap(size, size, 0.1) # width, height, gap frequency
-    packages = set()
-    destinations = set()
-    drivers = set()
+    packages = {}
+    destinations = {}
+    drivers = {}
     rp = partial(_get_random_point, grid)
 
     for i in xrange(k):
-        packages.add(Package(i, rp()))
-        destinations.add(Destination(i, rp()))
-
-    for i in xrange(n):
-        drivers.add(Driver(i, rp()))
+        packages[i] = rp()
+        destinations[i] = rp()
 
     garage = rp()
+    for i in xrange(n):
+        drivers[i] = garage
 
     start_state = State(
-        packages=frozenset(packages),
-        drivers=frozenset(drivers),
+        packages=packages.copy(),
+        drivers=drivers.copy(),
     )
 
     goal_state = State(
-        packages=frozenset(Package(*d) for d in destinations),
-        drivers=frozenset(Driver(i, garage) for i in xrange(n)),
+        # Package end state is just destinations
+        packages=destinations.copy(),
+        drivers={ k:garage for k in drivers.iterkeys()}
     )
 
     return NKP(
