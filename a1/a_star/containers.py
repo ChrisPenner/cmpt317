@@ -20,7 +20,7 @@ class Container(object):
         for v in iterable:
             self.add(v)
 
-class Queue(object):
+class Queue(Container):
     """
     A basic FIFO queue datastructure.
     """
@@ -40,7 +40,7 @@ class Queue(object):
     def add(self, item):
         self.data.append(item)
 
-class Stack(object):
+class Stack(Container):
     """
     A basic LIFO stack datastructure.
     """
@@ -60,7 +60,7 @@ class Stack(object):
     def add(self, item):
         self.data.append(item)
 
-class Heap(object):
+class Heap(Container):
     """
     A basic priority heap datastructure.
     """
