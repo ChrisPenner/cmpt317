@@ -6,7 +6,7 @@ class TestStack(unittest.TestCase):
     def setUp(self):
         self.stack = Stack()
 
-    def test_respects_fifo(self):
+    def test_respects_lifo(self):
         self.stack.add(1)
         self.stack.add(2)
         self.stack.add(3)
