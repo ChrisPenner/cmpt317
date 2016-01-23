@@ -1,5 +1,5 @@
 import unittest
-from ..a_star import Search
+from ..searcher import Search
 
 
 class TestSearch(unittest.TestCase):
