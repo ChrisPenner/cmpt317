@@ -1,1 +1,1 @@
-# cmpt317
+# cmpt317## Using the Map.py graph generator.First:```shsudo pip install networkx matplotlib```then you can import it and use it:```pythonimport Map as mgraph = m.makeMap(10, 10, 0.25) # Generate 10 x 10 graph with 0.25 gap frequencygraph.nodes() # Prints out the nodes as (x,y) pairsgraph.neighbours((1, 6)) # Prints out the neighbours of node (1, 6)```
