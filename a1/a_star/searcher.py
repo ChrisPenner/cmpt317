@@ -2,7 +2,7 @@ class Searcher(object):
     """
     Searcher ties together components of a search and actually performs it.
     """
-    def __init__(self,  transition_function=None, cost_function=None, data_structure=None, start_state=None, goal_state=None, track_states=False):
+    def __init__(self,  transition_function=None, cost_function=None, data_structure=None, start_state=None, goal_state=None):
         """
         Inject the necessary functions for searching
         Note that whichever object is used for tracking State, that it must be
@@ -20,33 +20,35 @@ class Searcher(object):
         self.transition_function = transition_function
         self.cost_function = cost_function
         self.data_structure = data_structure
-        self.data_structure.add(start_state)
         self.goal_state = goal_state
-        self.total_cost = 0
-        self.track_states = track_states
-        if self.track_states:
-            self.states = [start_state]
+        # Total cost so far at the given "current_state"
+        self.current_state = start_state
+        # self.states = [start_state]
 
     def __call__(self):
         """
         Run the actual Search
         """
-        self.current_state = self.data_structure.next()
+        cost_of_current_state = 0
         while self.current_state != self.goal_state:
             # Get all possible next states
             next_states = self.transition_function(self.current_state)
+            # Get a list of (total (actual) cost to state, state)
+            states_with_costs = [
+                (cost_of_current_state + self.cost_function(self.current_state, s), s) 
+                for s in next_states
+            ]
             # Add all possible next states to our data_structure
-            self.data_structure.extend(next_states)
-            past_state = self.current_state
-            # Transition states
-            self.current_state = self.data_structure.next()
-            # Track total cost so far
-            self.total_cost += self.cost_function(past_state, self.current_state)
-            # Keep our path to victory
-            if self.track_states:
-                self.states.append(self.current_state)
+            self.data_structure.extend(states_with_costs)
 
-        if self.track_states:
-            return self.total_cost, self.states
-        else:
-            return self.total_cost
+            # Move to the next good state
+            cost_of_current_state, self.current_state = self.data_structure.next()
+            if not self.current_state:
+                print "Couldn't find a solution!"
+                return None
+
+            # Keep track of our path to victory
+            # if self.track_states:
+            #     self.states.append(self.current_state)
+
+        return cost_of_current_state

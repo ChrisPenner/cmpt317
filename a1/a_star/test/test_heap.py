@@ -9,17 +9,17 @@ class TestHeap(unittest.TestCase):
     def test_respects_heap_property_with_heuristic(self):
         h = lambda x: -x
         heap = Heap(heuristic=h)
-        heap.add(3)
-        heap.add(2)
-        heap.add(5)
-        heap.add(1)
-        self.assertEqual(5, heap.next())
-        self.assertEqual(3, heap.next())
+        heap.add((3, 1))
+        heap.add((2, 2))
+        heap.add((5, 3))
+        heap.add((1, 4))
+        self.assertEqual(4, heap.next())
         self.assertEqual(2, heap.next())
         self.assertEqual(1, heap.next())
+        self.assertEqual(3, heap.next())
 
     def test_returns_none_when_empty(self):
         heap = Heap(heuristic=lambda x: x)
-        heap.add((1, None))
-        self.assertEqual((1, None), heap.next())
+        heap.add((1, 5))
+        self.assertEqual(5, heap.next())
         self.assertEqual(None, heap.next())

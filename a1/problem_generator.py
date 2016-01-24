@@ -14,7 +14,7 @@ def get_problem(size, n, k, p):
     :k: the number of packages
     :p: the carrying capacity of each driver
     """
-    graph = m.makeMap(size, size, 0.1) # width, height, gap frequency
+    graph = m.makeMap(size, size, 0) # width, height, gap frequency
     packages = {}
     destinations = {}
     drivers = {}

@@ -65,7 +65,7 @@ class Heap(Container):
     A basic priority heap datastructure.
     """
 
-    def __init__(self, heuristic, avoid_duplicates=True, hash_state=lambda x: x):
+    def __init__(self, heuristic, hash_state=lambda x: x):
         """
         Sets up a minimized Heap with an appropriate interface for Search.
         items should be of form (cost, item)
@@ -73,20 +73,20 @@ class Heap(Container):
         self.data = []
         self.heuristic = heuristic
         self.past_states = set()
-        self.avoid_duplicates = avoid_duplicates
         self.hash_state = hash_state
 
     def next(self):
         if self.data:
             # Discard the heuristic guess, no longer needed
-            _, state = heapq.heappop(self.data)
-            return state
+            estimate, cost_so_far, state = heapq.heappop(self.data)
+            return (cost_so_far, state)
         else:
             return None
 
-    def add(self, state):
+    def add(self, item):
+        cost, state = item
         # Don't add previously tried states
-        if self.avoid_duplicates and self.hash_state(state) in self.past_states:
+        if self.hash_state(state) in self.past_states:
             return
         self.past_states.add(self.hash_state(state))
-        heapq.heappush(self.data, (self.heuristic(state), state))
+        heapq.heappush(self.data, (self.heuristic(state) + cost, cost, state))

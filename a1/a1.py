@@ -57,7 +57,7 @@ def print_path(states):
         print "P: ", s.packages, "D: ", s.drivers
 
 if __name__ == '__main__':
-    problem = pg.get_problem(2, 1, 1, 1)
+    problem = pg.get_problem(3, 1, 1, 1)
     h = partial(h1, problem.goal_state)
     t = partial(transition, problem.graph)
     heap = Heap(heuristic=h, hash_state=hash_state)
@@ -67,13 +67,10 @@ if __name__ == '__main__':
         data_structure=heap,
         start_state=problem.start_state,
         goal_state=problem.goal_state,
-        track_states=True,
     )
-    cost, states = s()
+    cost = s()
     print "Start: ",
     print_path([problem.start_state])
     print "Goal: ",
     print_path([problem.goal_state])
-    print "Path: "
-    print_path(states)
     print 'Cost:', cost
