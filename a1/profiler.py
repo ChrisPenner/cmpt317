@@ -5,7 +5,7 @@ from a_star.searcher import Searcher
 from a_star.containers import Heap
 import time
 
-problem = pg.get_problem(33, 1, 1, 1, seed=1)
+problem = pg.get_problem(size=4, num_drivers=4, num_packages=2, capacity=1, seed=3)
 hf1 = partial(h1, problem.goal_state)
 hf2 = partial(h2, problem.goal_state)
 t = partial(transition, problem.graph)
