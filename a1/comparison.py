@@ -6,7 +6,6 @@ from a_star.searcher import Searcher
 from a_star.containers import Heap
 import time
 from multiprocessing import Pool
-import cProfile, pstats
 
 def test_h(problem, s, (h_name, h)):
     hf = partial(h, problem.goal_state)
@@ -21,7 +20,7 @@ def test_h(problem, s, (h_name, h)):
 
     print h_name, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
 
-problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
+problem = pg.get_problem(size=3, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
 # This one runs suboptimal on h3:
 # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
@@ -36,8 +35,9 @@ s = partial(Searcher,
 test = partial(test_h, problem, s)
 
 # Use all available cores to compute results
-profile = cProfile.Profile()
-profile.enable()
-test(('h3', h3))
-profile.disable()
-ps = pstats.Stats(profile).sort_stats('tottime').print_stats()
+pool = Pool()
+pool.map(test, [
+    ('h1', h1), 
+    ('h2', h2), 
+    ('h3', h3),
+])
