@@ -4,7 +4,7 @@ import problem_generator as pg
 from problem_generator import State, Point
 from a_star.searcher import Searcher
 from a_star.containers import Heap
-from heuristics import h1, h2
+from heuristics import h1, h2, h3
 
 def transition(graph, state):
     """
@@ -46,9 +46,8 @@ def print_path(states):
     for s in states:
         print "P: ", s.packages, "D: ", s.drivers
 
-if __name__ == '__main__':
-    problem = pg.get_problem(33, 1, 1, 1, seed=0)
-    h = partial(h1, problem.goal_state)
+def run(problem, h):
+    h = partial(h, problem.goal_state)
     t = partial(transition, problem.graph)
     heap = Heap(heuristic=h, hash_state=hash_state)
     s = Searcher(
@@ -59,6 +58,12 @@ if __name__ == '__main__':
         goal_state=problem.goal_state,
     )
     cost, steps = s()
+    return cost, steps
+
+
+if __name__ == '__main__':
+    problem = pg.get_problem(9, 1, 1, 1, seed=0)
+    cost, steps = run(problem, h2)
     print "Start: ",
     print_path([problem.start_state])
     print "Goal: ",

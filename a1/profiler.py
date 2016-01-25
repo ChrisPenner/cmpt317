@@ -5,39 +5,26 @@ import problem_generator as pg
 from a_star.searcher import Searcher
 from a_star.containers import Heap
 import time
-from multiprocessing import Pool
 import cProfile, pstats
+from comparison import test_h
 
-def test_h(problem, s, (h_name, h)):
-    hf = partial(h, problem.goal_state)
-    sf = s(data_structure=Heap(heuristic=hf, hash_state=hash_state))
-    t = time.time()
-    cost, steps = sf()
-    t_end = time.time() - t
-    if steps == 0:
-        efficiency = 100
-    else:
-        efficiency = float(cost)/steps * 100
+if __name__ == "__main__":
+    problem = pg.get_problem(size=4, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-    print h_name, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
+    # This one runs suboptimal on h3:
+    # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
+    t = partial(transition, problem.graph)
+    s = partial(Searcher,
+            transition_function=t,
+            cost_function=cost_of_transition,
+            start_state=problem.start_state,
+            goal_state=problem.goal_state,
+            )
+    test = partial(test_h, problem, s)
 
-# This one runs suboptimal on h3:
-# problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
-
-t = partial(transition, problem.graph)
-s = partial(Searcher,
-        transition_function=t,
-        cost_function=cost_of_transition,
-        start_state=problem.start_state,
-        goal_state=problem.goal_state,
-        )
-test = partial(test_h, problem, s)
-
-# Use all available cores to compute results
-profile = cProfile.Profile()
-profile.enable()
-test(('h3', h3))
-profile.disable()
-ps = pstats.Stats(profile).sort_stats('tottime').print_stats()
+    profile = cProfile.Profile()
+    profile.enable()
+    test(h2)
+    profile.disable()
+    ps = pstats.Stats(profile).sort_stats('tottime').print_stats()

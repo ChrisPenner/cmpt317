@@ -7,7 +7,7 @@ from a_star.containers import Heap
 import time
 from multiprocessing import Pool
 
-def test_h(problem, s, (h_name, h)):
+def test_h(problem, s, h):
     hf = partial(h, problem.goal_state)
     sf = s(data_structure=Heap(heuristic=hf, hash_state=hash_state))
     t = time.time()
@@ -18,26 +18,27 @@ def test_h(problem, s, (h_name, h)):
     else:
         efficiency = float(cost)/steps * 100
 
-    print h_name, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
+    print h.__name__, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
 
-problem = pg.get_problem(size=3, num_drivers=1, num_packages=3, capacity=1, seed=0)
+if __name__ == '__main__':
+    problem = pg.get_problem(size=3, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-# This one runs suboptimal on h3:
-# problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
+    # This one runs suboptimal on h3:
+    # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-t = partial(transition, problem.graph)
-s = partial(Searcher,
-        transition_function=t,
-        cost_function=cost_of_transition,
-        start_state=problem.start_state,
-        goal_state=problem.goal_state,
-        )
-test = partial(test_h, problem, s)
+    t = partial(transition, problem.graph)
+    s = partial(Searcher,
+            transition_function=t,
+            cost_function=cost_of_transition,
+            start_state=problem.start_state,
+            goal_state=problem.goal_state,
+            )
+    test = partial(test_h, problem, s)
 
-# Use all available cores to compute results
-pool = Pool()
-pool.map(test, [
-    ('h1', h1), 
-    ('h2', h2), 
-    ('h3', h3),
-])
+    # Use all available cores to compute results
+    pool = Pool()
+    pool.map(test, [
+        h1,
+        h2,
+        h3,
+    ])
