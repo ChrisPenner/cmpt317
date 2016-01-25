@@ -5,16 +5,23 @@ import problem_generator as pg
 from a_star.searcher import Searcher
 from a_star.containers import Heap
 import time
+from multiprocessing import Pool
+import cProfile, pstats
 
-def test_h(problem, h, s):
+def test_h(problem, s, (h_name, h)):
     hf = partial(h, problem.goal_state)
     sf = s(data_structure=Heap(heuristic=hf, hash_state=hash_state))
     t = time.time()
     cost, steps = sf()
     t_end = time.time() - t
-    print 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(float(cost)/steps * 100)
+    if steps == 0:
+        efficiency = 100
+    else:
+        efficiency = float(cost)/steps * 100
 
-# problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=1)
+    print h_name, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
+
+problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
 # This one runs suboptimal on h3:
 # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
@@ -26,10 +33,17 @@ s = partial(Searcher,
         start_state=problem.start_state,
         goal_state=problem.goal_state,
         )
+test = partial(test_h, problem, s)
 
-print 'h1',
-test_h(problem, h1, s)
-print 'h2',
-test_h(problem, h2, s)
-print 'h3',
-test_h(problem, h3, s)
+# Use all available cores to compute results
+pool = Pool()
+profile = cProfile.Profile()
+profile.enable()
+# pool.map(test, [
+#     ('h1', h1), 
+#     ('h2', h2), 
+    # ('h3', h3),
+# ])
+test(('h3', h3))
+profile.disable()
+ps = pstats.Stats(profile).sort_stats('tottime').print_stats()
