@@ -34,6 +34,8 @@ def cost_of_transition(start_state, dest_state):
 def h1(goal_state, current_state):
     """
     Returns an estimated distance between goal_state and current_state
+
+    h1 only counts the distance of packages from their goal.
     """
     total = 0
     # Add up distance of packages from their destinations
@@ -42,6 +44,38 @@ def h1(goal_state, current_state):
         vx, vy = v
         total += abs(px - vx) + abs(py - vy)
     return total
+
+def h2(goal_state, current_state):
+    """
+    Returns an estimated distance between goal_state and current_state
+
+    h2 tries to move drivers towards packages, then packages towards destinations,
+    then drivers back to garages
+    """
+    manhattan_distance = lambda (ax, ay), (bx, by): abs(ax - bx) + abs(ay - by)
+    total_package_distance = 0
+    driver_distance_from_undelivered_packages = 0
+    driver = current_state.drivers[0]
+    undelivered_packages = 0
+    driver_distance_from_garage = 0
+
+    # Add up distance of packages from their destinations
+    for (k,v) in goal_state.packages.iteritems():
+        package_loc = current_state.packages[k]
+        distance_from_dest = manhattan_distance(package_loc, v)
+        total_package_distance += distance_from_dest
+        if distance_from_dest != 0:
+            undelivered_packages += 1
+            driver_distance_from_undelivered_packages += manhattan_distance(driver, package_loc)
+
+    if undelivered_packages == 0:
+        driver_distance_from_garage = sum(manhattan_distance(d, goal_state.drivers[0])
+                                          for d in current_state.drivers.itervalues())
+
+    return (total_package_distance
+            + driver_distance_from_undelivered_packages
+            + driver_distance_from_garage
+            )
 
 def hash_state(state):
     """
@@ -57,7 +91,7 @@ def print_path(states):
         print "P: ", s.packages, "D: ", s.drivers
 
 if __name__ == '__main__':
-    problem = pg.get_problem(3, 1, 1, 1)
+    problem = pg.get_problem(33, 1, 1, 1, seed=0)
     h = partial(h1, problem.goal_state)
     t = partial(transition, problem.graph)
     heap = Heap(heuristic=h, hash_state=hash_state)
@@ -68,9 +102,10 @@ if __name__ == '__main__':
         start_state=problem.start_state,
         goal_state=problem.goal_state,
     )
-    cost = s()
+    cost, steps = s()
     print "Start: ",
     print_path([problem.start_state])
     print "Goal: ",
     print_path([problem.goal_state])
     print 'Cost:', cost
+    print 'Steps till optimal:', steps

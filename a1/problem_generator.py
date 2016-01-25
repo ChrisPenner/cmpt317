@@ -7,13 +7,14 @@ Point = namedtuple('Point', ['x', 'y'])
 NKP = namedtuple('NKP', ['graph', 'packages', 'destinations', 'drivers', 'garage', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
 
-def get_problem(size, n, k, p):
+def get_problem(size, n, k, p, seed=None):
     """
     :size: The size of the grid will be size x size
     :n: the number of drivers
     :k: the number of packages
     :p: the carrying capacity of each driver
     """
+    random.seed(seed)
     graph = m.makeMap(size, size, 0) # width, height, gap frequency
     packages = {}
     destinations = {}

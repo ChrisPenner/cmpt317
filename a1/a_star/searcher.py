@@ -30,7 +30,9 @@ class Searcher(object):
         Run the actual Search
         """
         cost_of_current_state = 0
+        total_steps = 0
         while self.current_state != self.goal_state:
+            total_steps += 1
             # Get all possible next states
             next_states = self.transition_function(self.current_state)
             # Get a list of (total (actual) cost to state, state)
@@ -51,4 +53,4 @@ class Searcher(object):
             # if self.track_states:
             #     self.states.append(self.current_state)
 
-        return cost_of_current_state
+        return cost_of_current_state, total_steps
