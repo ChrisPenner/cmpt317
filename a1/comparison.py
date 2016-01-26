@@ -21,7 +21,7 @@ def test_h(problem, s, h):
     print h.__name__, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
 
 if __name__ == '__main__':
-    problem = pg.get_problem(size=3, num_drivers=1, num_packages=3, capacity=1, seed=0)
+    problem = pg.get_problem(size=4, num_drivers=1, num_packages=4, capacity=1, seed=1)
 
     # This one runs suboptimal on h3:
     # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)

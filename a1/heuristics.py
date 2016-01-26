@@ -9,6 +9,12 @@ def packages_to_destinations(destinations, packages):
     return {package_num: manhattan_distance(loc, destinations[package_num])
             for (package_num, loc) in packages.iteritems() }
 
+def get_undelivered_packages(packages, destinations):
+    return {k:v for k,v in packages.iteritems() if v != destinations[k]}
+
+def h0(goal, current):
+    return 0
+
 # NOT ADMISSIBLE!!
 def h1(goal_state, current_state):
     """
@@ -71,7 +77,7 @@ def h3(goal_state, current_state):
     furthest_package_from_furthest_package = 0
 
     # Get all undelivered packages
-    undelivered_packages = {k:v for k,v in current_state.packages.iteritems() if v != goal_state.packages[k]}
+    undelivered_packages = get_undelivered_packages(current_state.packages, goal_state.packages)
 
     if undelivered_packages:
         package_distances = packages_to_destinations(goal_state.packages, undelivered_packages)
