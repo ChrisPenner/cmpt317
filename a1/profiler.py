@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from a1 import transition, cost_of_transition, hash_state
 from heuristics import h1, h2, h3
 from functools import partial

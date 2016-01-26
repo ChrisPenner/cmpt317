@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from a1 import run, State
 from problem_generator import get_problem
 from heuristics import h0, h1, h2, h3

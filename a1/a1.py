@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from functools import partial
 
 import problem_generator as pg

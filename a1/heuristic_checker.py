@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from a1 import run, State
 from problem_generator import get_problem
 from heuristics import h0, h1, h2, h3
@@ -11,7 +13,7 @@ def test_heuristic(problem, heuristic):
 problem = get_problem(size=4, num_drivers=1, num_packages=3, capacity=1, seed=0)
 # test_heuristic(problem, h0)
 # test_heuristic(problem, h1)
-test_heuristic(problem, h2)
+# test_heuristic(problem, h2)
 # test_heuristic(problem, h3)
 test_heuristic(problem, h4)
 # print problem.goal_state
