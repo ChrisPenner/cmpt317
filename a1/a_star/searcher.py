@@ -49,8 +49,4 @@ class Searcher(object):
                 print "Couldn't find a solution!"
                 return None
 
-            # Keep track of our path to victory
-            # if self.track_states:
-            #     self.states.append(self.current_state)
-
         return cost_of_current_state, total_steps

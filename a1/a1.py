@@ -7,14 +7,13 @@ from a_star.searcher import Searcher
 from a_star.containers import Heap
 from heuristics import h1, h2, h3
 
-def transition(graph, state):
+def transition(problem, state):
     """
-    Returns an iterable of all possible next states and the cost to move there
-    of the form (cost, next_state)
+    Returns an iterable of all possible next states
     """
+    graph, capacity = problem.graph, problem.capacity
     for (d_num, d_point) in state.drivers.iteritems():
         for new_driver_position in graph.neighbors(d_point):
-            # Get a all other drivers but the current one
             altered_drivers = state.drivers.copy()
             altered_drivers[d_num] = new_driver_position
 
@@ -49,7 +48,7 @@ def print_path(states):
 
 def run(problem, h):
     h = partial(h, problem.goal_state)
-    t = partial(transition, problem.graph)
+    t = partial(transition, problem)
     heap = Heap(heuristic=h, hash_state=hash_state)
     s = Searcher(
         transition_function=t,

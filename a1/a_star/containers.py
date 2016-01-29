@@ -83,8 +83,7 @@ class Heap(Container):
         else:
             return None
 
-    def add(self, item):
-        cost, state = item
+    def add(self, (cost, state)):
         # Don't add previously tried states
         if self.hash_state(state) in self.past_states:
             return
