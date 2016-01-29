@@ -8,11 +8,12 @@ def packages_to_destinations(packages, destinations):
     return (manhattan_distance(p, d) for p, d in zip(packages, destinations))
 
 def get_undelivered_packages_and_destinations(packages, destinations):
-    p = tuple(package for package, destination in zip(packages, destinations)
-                     if package != destination)
-    d = tuple(package for package, destination in zip(packages, destinations)
-                     if package != destination)
-    return p, d
+    filtered = [ (package, destination) for (package, destination) in zip(packages, destinations) 
+                if package != destination ]
+    if filtered:
+        return zip(*filtered)
+    else:
+        return (), ()
 
 def h0(goal, current):
     return 0

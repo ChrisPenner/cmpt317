@@ -9,20 +9,19 @@ SOUTH = 'south'
 NONE = 'none'
 
 def get_direction(start, end):
-    start, end = Point(*start), Point(*end)
     if start.x < end.x:
         horizontal = EAST
-    elif start.x == end.x:
-        horizontal = NONE
-    else:
+    elif start.x > end.x:
         horizontal = WEST
+    else:
+        horizontal = NONE
 
     if start.y < end.y:
         vertical = SOUTH
-    elif start.y == end.y:
-        vertical = NONE
-    else:
+    elif start.y > end.y:
         vertical = NORTH
+    else:
+        vertical = NONE
     return (horizontal, vertical)
 
 # Should be admissible
@@ -34,10 +33,11 @@ def h4(goal_state, current_state):
     # Get all package -> destinations that go a given direction
     # Each package is likely to appear in a north/south list and one east/west
     # list
-    easts = [ (start.x, end.x) for (start, end) in start_end_pairs if get_direction(start, end)[0] == EAST ] 
-    wests = [ (start.x, end.x) for (start, end) in start_end_pairs if get_direction(start, end)[0] == WEST ] 
-    souths = [ (start.y, end.y) for (start, end) in start_end_pairs if get_direction(start, end)[1] == SOUTH ] 
-    norths = [ (start.y, end.y) for (start, end) in start_end_pairs if get_direction(start, end)[1] == NORTH ] 
+    with_directions = [(start, end, get_direction(start, end)) for (start, end) in start_end_pairs]
+    easts = [ (start.x, end.x) for (start, end, direction) in with_directions if direction[0] == EAST ] 
+    wests = [ (start.x, end.x) for (start, end, direction) in with_directions if direction[0] == WEST ] 
+    souths = [ (start.y, end.y) for (start, end, direction) in with_directions if direction[1] == SOUTH ] 
+    norths = [ (start.y, end.y) for (start, end, direction) in with_directions if direction[1] == NORTH ] 
 
     # Find the most eastward distance we may have to travel
     east_min = min(easts, key=itemgetter(0))[0] if easts else 0
