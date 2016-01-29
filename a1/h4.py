@@ -1,5 +1,5 @@
 from collections import namedtuple
-from heuristics import get_undelivered_packages, packages_to_destinations, manhattan_distance
+from heuristics import get_undelivered_packages_and_destinations, packages_to_destinations, manhattan_distance
 from operator import itemgetter
 Point = namedtuple('Point', ['x', 'y'])
 EAST = 'east'
@@ -27,10 +27,9 @@ def get_direction(start, end):
 
 # Should be admissible
 def h4(goal_state, current_state):
-    destinations = goal_state.packages
     garage = Point(*goal_state.drivers[0])
-    undelivered_packages = get_undelivered_packages(current_state.packages, goal_state.packages)
-    start_end_pairs = [(Point(*start), Point(*destinations[num])) for num, start in undelivered_packages.iteritems()]
+    packages, destinations = get_undelivered_packages_and_destinations(current_state.packages, goal_state.packages)
+    start_end_pairs = zip(packages, destinations)
 
     # Get all package -> destinations that go a given direction
     # Each package is likely to appear in a north/south list and one east/west
@@ -60,7 +59,7 @@ def h4(goal_state, current_state):
 
     # If there are packages to deliver, find the largest distance from the
     # garage in each cardinal direction
-    if undelivered_packages:
+    if packages:
         wester = [ min(start.x, end.x) for start, end in start_end_pairs if min(start.x, end.x) < garage.x ]
         max_west_diff = max(garage.x - x for x in wester) if wester else 0
         easter = [ max(start.x, end.x) for start, end in start_end_pairs if max(start.x, end.x) > garage.x ]
@@ -72,14 +71,14 @@ def h4(goal_state, current_state):
         driver_package_distance = max_east_diff + max_west_diff + max_north_diff + max_south_diff
 
     # Find the distance of drivers from the garage
-    driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers.itervalues())
+    driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
     # Use the larger distance (either the packages or the drivers, this helps
     # keep drivers from wandering off)
     driver_distance = max(driver_package_distance, driver_distance)
 
     # print 'east:', east_dist, 'west:', west_dist, 'north:', north_dist, 'south:', south_dist
     # print [get_direction(start, end) for start, end in start_end_pairs]
-    # print "undelivered:", undelivered_packages
+    # print "undelivered:", packages
     # print "pairs:", start_end_pairs
     # print "Easts:", easts, 'Wests:', wests
     # print "Norths:", norths, 'Souths:', souths

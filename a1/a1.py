@@ -19,15 +19,18 @@ def transition(problem, state):
         # their position in the tuple the same
         before_drivers, after_drivers = drivers[:i], drivers[i+1:]
         for new_driver_position in graph.neighbors(driver):
+            new_driver_position = Point(*new_driver_position)
             # Put driver back in appropriate place
             altered_drivers = before_drivers + (new_driver_position,) + after_drivers
             # Now we see if any of the packages could have moved
             # Go through each possible combination we could have with the
             # current capacity, including moving 0 packages
-            movable_packages = [ n for (n, package) in enumerate(packages) if package == driver ]
+            movable_packages = [ n for (n, package) in enumerate(packages) 
+                                if package == driver ]
             # Iterate through the indexes of movable packages for each possible
             # combination
-            for c in chain.from_iterable(combinations(movable_packages, r) for r in range(0, capacity + 1)):
+            for c in chain.from_iterable(combinations(movable_packages, r) 
+                                         for r in range(0, capacity + 1)):
                 # Get new package positions
                 new_packages = tuple(new_driver_position if n in c else packages[n] 
                                      for n in range(len(packages)))
@@ -37,15 +40,6 @@ def cost_of_transition(start_state, dest_state):
     # Assume all costs are 1 for now
     return 1
 
-def hash_state(state):
-    """
-    Turns the state object (which uses dicts) into a tuple of frozensets 
-    (which can be hashed) so we can store it and check for repetition in O(1)
-    within the heap.
-    """
-    freeze = lambda x: frozenset(x.iteritems())
-    return tuple(freeze(x) for x in state)
-
 def print_path(states):
     for s in states:
         print "P: ", s.packages, "D: ", s.drivers
@@ -53,7 +47,7 @@ def print_path(states):
 def run(problem, h):
     h = partial(h, problem.goal_state)
     t = partial(transition, problem)
-    heap = Heap(heuristic=h, hash_state=hash_state)
+    heap = Heap(heuristic=h)
     s = Searcher(
         transition_function=t,
         cost_function=cost_of_transition,
