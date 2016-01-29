@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # This one runs suboptimal on h3:
     # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-    t = partial(transition, problem.graph)
+    t = partial(transition)
     s = partial(Searcher,
             transition_function=t,
             cost_function=cost_of_transition,

@@ -10,10 +10,13 @@ def test_heuristic(problem, heuristic):
     # print "Guess:", heuristic(problem.goal_state, problem.start_state)
     print heuristic.__name__, "Guess:", heuristic(problem.goal_state, problem.start_state), 'Cost:', cost, 'Steps:', steps
 
-problem = get_problem(size=4, num_drivers=1, num_packages=3, capacity=1, seed=0)
+problem = get_problem(size=5, num_drivers=1, num_packages=4, capacity=1, seed=3)
+
+# Breaks with gap-frequency 0.4
+# problem = get_problem(size=5, num_drivers=1, num_packages=4, capacity=1, seed=3)
 # test_heuristic(problem, h0)
 # test_heuristic(problem, h1)
-# test_heuristic(problem, h2)
+test_heuristic(problem, h2)
 # test_heuristic(problem, h3)
 test_heuristic(problem, h4)
 # print problem.goal_state

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from a1 import transition, cost_of_transition, hash_state
 from heuristics import h1, h2, h3
+from h4 import h4
 from functools import partial
 import problem_generator as pg
 from a_star.searcher import Searcher
@@ -22,12 +23,12 @@ def test_h(problem, s, h):
     print h.__name__, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
 
 if __name__ == '__main__':
-    problem = pg.get_problem(size=4, num_drivers=1, num_packages=4, capacity=1, seed=1)
+    problem = pg.get_problem(size=8, num_drivers=1, num_packages=4, capacity=1, seed=1)
 
     # This one runs suboptimal on h3:
     # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
-    t = partial(transition, problem.graph)
+    t = partial(transition, problem)
     s = partial(Searcher,
             transition_function=t,
             cost_function=cost_of_transition,
@@ -41,5 +42,6 @@ if __name__ == '__main__':
     pool.map(test, [
         h1,
         h2,
-        h3,
+        # h3,
+        h4
     ])

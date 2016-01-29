@@ -4,7 +4,7 @@ from collections import namedtuple
 from functools import partial
 
 Point = namedtuple('Point', ['x', 'y'])
-NKP = namedtuple('NKP', ['graph', 'packages', 'destinations', 'drivers', 'garage', 'start_state', 'goal_state'])
+NKP = namedtuple('NKP', ['graph', 'garage', 'capacity', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
 
 def get_problem(size, num_drivers, num_packages, capacity, seed=None):
@@ -15,7 +15,7 @@ def get_problem(size, num_drivers, num_packages, capacity, seed=None):
     :capacity: the carrying capacity of each driver
     """
     random.seed(seed)
-    graph = m.makeMap(size, size, 0) # width, height, gap frequency
+    graph = m.makeMap(size, size, 0.0) # width, height, gap frequency
     packages = {}
     destinations = {}
     drivers = {}
@@ -46,10 +46,8 @@ def get_problem(size, num_drivers, num_packages, capacity, seed=None):
 
     return NKP(
         graph=graph,
-        packages=packages,
-        destinations=destinations,
-        drivers=drivers,
         garage=garage,
+        capacity=capacity,
         start_state=start_state,
         goal_state=goal_state,
     )
