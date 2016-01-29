@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from functools import partial
+from itertools import combinations, chain
 
 import problem_generator as pg
 from problem_generator import State, Point
@@ -11,23 +12,26 @@ def transition(problem, state):
     """
     Returns an iterable of all possible next states
     """
+    drivers, packages = state.drivers, state.packages
     graph, capacity = problem.graph, problem.capacity
-    for (d_num, d_point) in state.drivers.iteritems():
-        for new_driver_position in graph.neighbors(d_point):
-            altered_drivers = state.drivers.copy()
-            altered_drivers[d_num] = new_driver_position
-
-            # Assume no packages moved with driver and return that state
-            yield State(packages=state.packages, drivers=altered_drivers)
+    for (i, driver) in enumerate(drivers):
+        # Get drivers that are before and after this one in the tuple, keeping
+        # their position in the tuple the same
+        before_drivers, after_drivers = drivers[:i], drivers[i+1:]
+        for new_driver_position in graph.neighbors(driver):
+            # Put driver back in appropriate place
+            altered_drivers = before_drivers + (new_driver_position,) + after_drivers
             # Now we see if any of the packages could have moved
-            for (p_num, p_point) in state.packages.iteritems():
-                # If they were on the same point as the driver they could have
-                # been carried
-                if p_point == d_point:
-                    altered_packages = state.packages.copy()
-                    # assume the driver carried the package
-                    altered_packages[p_num]= new_driver_position
-                    yield State(packages=altered_packages, drivers=altered_drivers)
+            # Go through each possible combination we could have with the
+            # current capacity, including moving 0 packages
+            movable_packages = [ n for (n, package) in enumerate(packages) if package == driver ]
+            # Iterate through the indexes of movable packages for each possible
+            # combination
+            for c in chain.from_iterable(combinations(movable_packages, r) for r in range(0, capacity + 1)):
+                # Get new package positions
+                new_packages = tuple(new_driver_position if n in c else packages[n] 
+                                     for n in range(len(packages)))
+                yield State(packages=new_packages, drivers=altered_drivers)
 
 def cost_of_transition(start_state, dest_state):
     # Assume all costs are 1 for now

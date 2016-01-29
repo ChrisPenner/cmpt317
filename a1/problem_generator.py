@@ -14,34 +14,25 @@ def get_problem(size, num_drivers, num_packages, capacity, seed=None):
     :num_packages: the number of packages
     :capacity: the carrying capacity of each driver
     """
+    # Random point generator (within bounds)
+    random_point = lambda: Point(*random.choice(graph.nodes()))
+
     random.seed(seed)
     graph = m.makeMap(size, size, 0.0) # width, height, gap frequency
-    packages = {}
-    destinations = {}
-    drivers = {}
-
-    # Random point generator (within bounds)
-    random_point = partial(random.choice, graph.nodes())
-
-    # Assign packages and their destinations randomly
-    for i in xrange(num_packages):
-        packages[i] = random_point()
-        destinations[i] = random_point()
-
+    packages = tuple(random_point() for x in range(num_packages))
+    destinations = tuple(random_point() for x in range(num_packages))
     garage = random_point()
-    # All drivers start at the garage
-    for i in xrange(num_drivers):
-        drivers[i] = garage
+    drivers = tuple(garage for _ in range(num_drivers))
 
     start_state = State(
-        packages=packages.copy(),
-        drivers=drivers.copy(),
+        packages=packages,
+        drivers=drivers
     )
 
     goal_state = State(
         # Each package's end state is just their destinations
-        packages=destinations.copy(),
-        drivers={ k:garage for k in drivers.iterkeys()}
+        packages=destinations,
+        drivers=drivers
     )
 
     return NKP(
