@@ -1,13 +1,13 @@
 #!/usr/bin/python
-from a1 import transition, cost_of_transition
-from heuristics import h1, h2, h3
-from h4 import h4
+from .a1 import transition, cost_of_transition
+from .heuristics import h1, h2, h3
+from .h4 import h4
 from functools import partial
-import problem_generator as pg
-from a_star.searcher import Searcher
+from . import problem_generator as pg
+from .a_star.searcher import Searcher
 import time
 import cProfile, pstats
-from comparison import test_h
+from .comparison import test_h
 
 if __name__ == "__main__":
     problem = pg.get_problem(size=5, num_drivers=2, num_packages=4, capacity=2, seed=2)

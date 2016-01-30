@@ -44,9 +44,9 @@ class Searcher(object):
             self.data_structure.extend(states_with_costs)
 
             # Move to the next good state
-            cost_of_current_state, self.current_state = self.data_structure.next()
+            cost_of_current_state, self.current_state = next(self.data_structure)
             if not self.current_state:
-                print "Couldn't find a solution!"
+                print("Couldn't find a solution!")
                 return None
 
         return cost_of_current_state, total_steps

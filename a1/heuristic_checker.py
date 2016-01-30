@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-from a1 import run, State
-from problem_generator import get_problem
-from heuristics import h0, h1, h2, h3
-from h4 import h4
+from .a1 import run, State
+from .problem_generator import get_problem
+from .heuristics import h0, h1, h2, h3
+from .h4 import h4
 
 def test_heuristic(problem, heuristic):
     cost, steps = run(problem, heuristic)
     # print "Guess:", heuristic(problem.goal_state, problem.start_state)
-    print heuristic.__name__, "Guess:", heuristic(problem.goal_state, problem.start_state), 'Cost:', cost, 'Steps:', steps
+    print((heuristic.__name__, "Guess:", heuristic(problem.goal_state, problem.start_state), 'Cost:', cost, 'Steps:', steps))
 
 problem = get_problem(size=4, num_drivers=2, num_packages=3, capacity=1, seed=1)
 

@@ -31,7 +31,7 @@ class Queue(Container):
         """
         self.data = deque()
 
-    def next(self):
+    def __next__(self):
         if self.data:
             return self.data.popleft()
         else:
@@ -51,7 +51,7 @@ class Stack(Container):
         """
         self.data = []
 
-    def next(self):
+    def __next__(self):
         if self.data:
             return self.data.pop()
         else:
@@ -74,7 +74,7 @@ class Heap(Container):
         self.heuristic = heuristic
         self.past_states = set()
 
-    def next(self):
+    def __next__(self):
         if self.data:
             # Discard the heuristic guess, no longer needed
             estimate, cost_so_far, state = heapq.heappop(self.data)
@@ -82,8 +82,9 @@ class Heap(Container):
         else:
             return None
 
-    def add(self, (cost, state)):
+    def add(self, xxx_todo_changeme):
         # Don't add previously tried states
+        (cost, state) = xxx_todo_changeme
         if state in self.past_states:
             return
         self.past_states.add(state)

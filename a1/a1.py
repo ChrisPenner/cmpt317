@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from functools import partial
 from itertools import combinations, chain
 
@@ -42,7 +41,7 @@ def cost_of_transition(start_state, dest_state):
 
 def print_path(states):
     for s in states:
-        print "P: ", s.packages, "D: ", s.drivers
+        print(("P: ", s.packages, "D: ", s.drivers))
 
 def run(problem, h):
     h = partial(h, problem.goal_state)
@@ -62,9 +61,9 @@ def run(problem, h):
 if __name__ == '__main__':
     problem = pg.get_problem(9, 1, 1, 1, seed=0)
     cost, steps = run(problem, h2)
-    print "Start: ",
+    print(("Start: ",))
     print_path([problem.start_state])
-    print "Goal: ",
+    print(("Goal: ",))
     print_path([problem.goal_state])
-    print 'Cost:', cost
-    print 'Steps till optimal:', steps
+    print(('Cost:', cost))
+    print(('Steps till optimal:', steps))

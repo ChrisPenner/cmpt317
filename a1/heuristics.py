@@ -1,7 +1,9 @@
 from operator import itemgetter
 from itertools import combinations, product
 
-def manhattan_distance((ax, ay), (bx, by)):
+def manhattan_distance(xxx_todo_changeme, xxx_todo_changeme1):
+    (ax, ay) = xxx_todo_changeme
+    (bx, by) = xxx_todo_changeme1
     return abs(ax - bx) + abs(ay - by)
 
 def packages_to_destinations(packages, destinations):
@@ -11,7 +13,7 @@ def get_undelivered_packages_and_destinations(packages, destinations):
     filtered = [ (package, destination) for (package, destination) in zip(packages, destinations) 
                 if package != destination ]
     if filtered:
-        return zip(*filtered)
+        return list(zip(*filtered))
     else:
         return (), ()
 

@@ -1,5 +1,5 @@
 from collections import namedtuple
-from heuristics import get_undelivered_packages_and_destinations, packages_to_destinations, manhattan_distance
+from .heuristics import get_undelivered_packages_and_destinations, packages_to_destinations, manhattan_distance
 from operator import itemgetter
 Point = namedtuple('Point', ['x', 'y'])
 EAST = 'east'
@@ -28,7 +28,7 @@ def get_direction(start, end):
 def h4(goal_state, current_state):
     garage = Point(*goal_state.drivers[0])
     packages, destinations = get_undelivered_packages_and_destinations(current_state.packages, goal_state.packages)
-    start_end_pairs = zip(packages, destinations)
+    start_end_pairs = list(zip(packages, destinations))
 
     # Get all package -> destinations that go a given direction
     # Each package is likely to appear in a north/south list and one east/west
