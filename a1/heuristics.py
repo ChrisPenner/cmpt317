@@ -1,7 +1,9 @@
 from operator import itemgetter
 from itertools import combinations, product
 
-def manhattan_distance((ax, ay), (bx, by)):
+def manhattan_distance(a, b):
+    ax, ay = a
+    bx, by = b
     return abs(ax - bx) + abs(ay - by)
 
 def packages_to_destinations(packages, destinations):

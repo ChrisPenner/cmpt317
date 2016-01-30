@@ -20,7 +20,7 @@ def test_h(problem, s, h):
     else:
         efficiency = float(cost)/steps * 100
 
-    print h.__name__, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency)
+    print(h.__name__, 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end), 'Efficiency: {:.2f}%'.format(efficiency))
 
 if __name__ == '__main__':
     problem = pg.get_problem(size=6, num_drivers=1, num_packages=3, capacity=1, seed=1)
