@@ -39,51 +39,61 @@ def h4(goal_state, current_state):
     souths = [ (start.y, end.y) for (start, end, direction) in with_directions if direction[1] == SOUTH ] 
     norths = [ (start.y, end.y) for (start, end, direction) in with_directions if direction[1] == NORTH ] 
 
+    total_package_distance = 0
     # Find the most eastward distance we may have to travel
-    east_min = min(easts, key=itemgetter(0))[0] if easts else 0
-    east_max = max(easts, key=itemgetter(1))[1] if easts else 0
-    west_min = min(wests, key=itemgetter(1))[1] if wests else 0
-    west_max = max(wests, key=itemgetter(0))[0] if wests else 0
-    south_min = min(souths, key=itemgetter(0))[0] if souths else 0
-    south_max = max(souths, key=itemgetter(1))[1] if souths else 0
-    north_min = min(norths, key=itemgetter(1))[1] if norths else 0
-    north_max = max(norths, key=itemgetter(0))[0] if norths else 0
+    if easts:
+        east_min = min(easts, key=itemgetter(0))[0]
+        east_max = max(easts, key=itemgetter(1))[1]
+        east_dist = max(east_max - east_min, 0)
+        total_package_distance += east_dist
+    if wests:
+        west_min = min(wests, key=itemgetter(1))[1]
+        west_max = max(wests, key=itemgetter(0))[0]
+        west_dist = max(west_max - west_min, 0)
+        total_package_distance += west_dist
+    if souths:
+        south_min = min(souths, key=itemgetter(0))[0]
+        south_max = max(souths, key=itemgetter(1))[1]
+        south_dist = max(south_max - south_min, 0)
+        total_package_distance += south_dist
+    if norths:
+        north_min = min(norths, key=itemgetter(1))[1]
+        north_max = max(norths, key=itemgetter(0))[0]
+        north_dist = max(north_max - north_min, 0)
+        total_package_distance += north_dist
 
-    # Get actual distance across span
-    east_dist = max(east_max - east_min, 0)
-    west_dist = max(west_max - west_min, 0)
-    north_dist = max(north_max - north_min, 0)
-    south_dist = max(south_max - south_min, 0)
-
-    driver_package_distance = 0
-
-    # If there are packages to deliver, find the largest distance from the
-    # garage in each cardinal direction
-    if packages:
-        wester = [ min(start.x, end.x) for start, end in start_end_pairs if min(start.x, end.x) < garage.x ]
-        max_west_diff = max(garage.x - x for x in wester) if wester else 0
-        easter = [ max(start.x, end.x) for start, end in start_end_pairs if max(start.x, end.x) > garage.x ]
-        max_east_diff = max(x - garage.x for x in easter) if easter else 0
-        norther = [min(start.y, end.y) for start, end in start_end_pairs if min(start.y, end.y) < garage.y]
-        max_north_diff = max(garage.y - y for y in norther) if norther else 0
-        souther = [ max(start.y, end.y) for start, end in start_end_pairs if max(start.y, end.y) > garage.y ]
-        max_south_diff = max(y - garage.y for y in souther) if souther else 0
-        driver_package_distance = max_east_diff + max_west_diff + max_north_diff + max_south_diff
+    # Get the offset required to move from one directional run to another.
+    if norths and souths:
+        north_south_offset = min(abs(north_min - south_min), abs(south_max - north_max))
+    else:
+        north_south_offset = 0
+    if easts and wests:
+        east_west_offset = min(abs(west_min - east_min), abs(east_max - west_max))
+    else:
+        east_west_offset = 0
+    total_offset = north_south_offset + east_west_offset
 
     # Find the distance of drivers from the garage
     driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
+
     # Use the larger distance (either the packages or the drivers, this helps
-    # keep drivers from wandering off)
-    driver_distance = max(driver_package_distance, driver_distance)
+    # keep drivers from wandering off), but we can only use one to stay
+    # admissible
+    best_heuristic = max(driver_distance, total_offset)
 
-    # print 'east:', east_dist, 'west:', west_dist, 'north:', north_dist, 'south:', south_dist
-    # print [get_direction(start, end) for start, end in start_end_pairs]
-    # print "undelivered:", packages
-    # print "pairs:", start_end_pairs
-    # print "Easts:", easts, 'Wests:', wests
-    # print "Norths:", norths, 'Souths:', souths
-    # print "start:", current_state
-    # print "end:", goal_state
+    # Get minimum distance of any driver to the closest (undelivered) package
+    if packages:
+        starting_travel = min(manhattan_distance(driver, package)
+                            for driver in current_state.drivers
+                            for package in packages)
+        ending_travel = min(manhattan_distance(destination, garage)
+                            for destination in destinations)
+    else:
+        starting_travel = ending_travel = 0
 
-    total_package_distance =  east_dist + west_dist + north_dist + south_dist
-    return total_package_distance + driver_distance
+    # print 'ewn', east_dist, west_dist, north_dist,
+    # print 'Travels:', starting_travel, ending_travel
+    # print 'eastwest offset / northsouth offset', east_west_offset, north_south_offset
+    # print 'driver distance or total_offset', driver_distance, total_offset
+    # print 'total package distance', total_package_distance
+    return total_package_distance + best_heuristic + starting_travel + ending_travel
