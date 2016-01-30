@@ -26,7 +26,7 @@ def get_direction(start, end):
 
 # Should be admissible
 def h4(goal_state, current_state):
-    garage = Point(*goal_state.drivers[0])
+    garage = goal_state.drivers[0]
     packages, destinations = get_undelivered_packages_and_destinations(current_state.packages, goal_state.packages)
     start_end_pairs = zip(packages, destinations)
 
