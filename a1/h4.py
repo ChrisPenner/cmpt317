@@ -28,6 +28,13 @@ def get_direction(start, end):
 def h4(goal_state, current_state):
     garage = goal_state.drivers[0]
     packages, destinations = get_undelivered_packages_and_destinations(current_state.packages, goal_state.packages)
+
+    # Find the distance of drivers from the garage
+    driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
+
+    if not packages:
+        return driver_distance
+
     start_end_pairs = zip(packages, destinations)
 
     # Get all package -> destinations that go a given direction
@@ -44,22 +51,22 @@ def h4(goal_state, current_state):
     if easts:
         east_min = min(easts, key=itemgetter(0))[0]
         east_max = max(easts, key=itemgetter(1))[1]
-        east_dist = max(east_max - east_min, 0)
+        east_dist = east_max - east_min
         total_package_distance += east_dist
     if wests:
         west_min = min(wests, key=itemgetter(1))[1]
         west_max = max(wests, key=itemgetter(0))[0]
-        west_dist = max(west_max - west_min, 0)
+        west_dist = west_max - west_min
         total_package_distance += west_dist
     if souths:
         south_min = min(souths, key=itemgetter(0))[0]
         south_max = max(souths, key=itemgetter(1))[1]
-        south_dist = max(south_max - south_min, 0)
+        south_dist = south_max - south_min
         total_package_distance += south_dist
     if norths:
         north_min = min(norths, key=itemgetter(1))[1]
         north_max = max(norths, key=itemgetter(0))[0]
-        north_dist = max(north_max - north_min, 0)
+        north_dist = north_max - north_min
         total_package_distance += north_dist
 
     # Get the offset required to move from one directional run to another.
@@ -73,13 +80,6 @@ def h4(goal_state, current_state):
         east_west_offset = 0
     total_offset = north_south_offset + east_west_offset
 
-    # Find the distance of drivers from the garage
-    driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
-
-    # Use the larger distance (either the packages or the drivers, this helps
-    # keep drivers from wandering off), but we can only use one to stay
-    # admissible
-    best_heuristic = max(driver_distance, total_offset)
 
     # Get minimum distance of any driver to the closest (undelivered) package
     if packages:
@@ -91,9 +91,9 @@ def h4(goal_state, current_state):
     else:
         starting_travel = ending_travel = 0
 
-    # print 'ewn', east_dist, west_dist, north_dist,
+    # print 'ewns', east_dist, west_dist, north_dist#, south_dist
     # print 'Travels:', starting_travel, ending_travel
     # print 'eastwest offset / northsouth offset', east_west_offset, north_south_offset
     # print 'driver distance or total_offset', driver_distance, total_offset
     # print 'total package distance', total_package_distance
-    return total_package_distance + best_heuristic + starting_travel + ending_travel
+    return total_package_distance + total_offset + starting_travel + ending_travel
