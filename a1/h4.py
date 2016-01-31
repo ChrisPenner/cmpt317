@@ -71,11 +71,25 @@ def h4(goal_state, current_state):
 
     # Get the offset required to move from one directional run to another.
     if norths and souths:
-        north_south_offset = min(abs(north_min - south_min), abs(south_max - north_max))
+        northern_offset = abs(north_min - south_min)
+        southern_offset = abs(north_max - south_max)
+        if garage.y > min(north_max, south_max):
+            north_south_offset = northern_offset
+        elif garage.y < max(north_min, south_min):
+            north_south_offset = southern_offset
+        else:
+            north_south_offset = northern_offset + southern_offset
     else:
         north_south_offset = 0
     if easts and wests:
-        east_west_offset = min(abs(west_min - east_min), abs(east_max - west_max))
+        western_offset = abs(east_min - west_min)
+        eastern_offset = abs(east_max - west_max)
+        if garage.x > min(east_max, west_max):
+            east_west_offset = western_offset
+        elif garage.x < max(east_min, west_min):
+            east_west_offset = eastern_offset
+        else:
+            east_west_offset = abs(west_min - east_min) + abs(east_max - west_max)
     else:
         east_west_offset = 0
     total_offset = north_south_offset + east_west_offset
