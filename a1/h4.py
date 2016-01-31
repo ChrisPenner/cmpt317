@@ -29,10 +29,10 @@ def h4(goal_state, current_state):
     garage = goal_state.drivers[0]
     packages, destinations = get_undelivered_packages_and_destinations(current_state.packages, goal_state.packages)
 
-    # Find the distance of drivers from the garage
-    driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
 
     if not packages:
+        # Find the distance of drivers from the garage
+        driver_distance = sum(manhattan_distance(driver, garage) for driver in current_state.drivers)
         return driver_distance
 
     start_end_pairs = zip(packages, destinations)
@@ -96,18 +96,15 @@ def h4(goal_state, current_state):
 
 
     # Get minimum distance of any driver to the closest (undelivered) package
-    if packages:
-        starting_travel = min(manhattan_distance(driver, package)
-                            for driver in current_state.drivers
-                            for package in packages)
-        ending_travel = min(manhattan_distance(destination, garage)
-                            for destination in destinations)
-    else:
-        starting_travel = ending_travel = 0
+    starting_travel = min(manhattan_distance(driver, package)
+                        for driver in current_state.drivers
+                        for package in packages)
+    ending_travel = min(manhattan_distance(destination, garage)
+                        for destination in destinations)
 
     # print 'ewns', east_dist, west_dist, north_dist#, south_dist
     # print 'Travels:', starting_travel, ending_travel
     # print 'eastwest offset / northsouth offset', east_west_offset, north_south_offset
-    # print 'driver distance or total_offset', driver_distance, total_offset
+    # print 'total_offset', total_offset
     # print 'total package distance', total_package_distance
     return total_package_distance + total_offset + starting_travel + ending_travel
