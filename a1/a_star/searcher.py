@@ -23,7 +23,6 @@ class Searcher(object):
         self.goal_state = goal_state
         # Total cost so far at the given "current_state"
         self.current_state = start_state
-        # self.states = [start_state]
 
     def __call__(self):
         """
@@ -46,7 +45,6 @@ class Searcher(object):
             # Move to the next good state
             cost_of_current_state, self.current_state = self.data_structure.next()
             if not self.current_state:
-                print("Couldn't find a solution!")
-                return None
+                raise Exception("Couldn't find a solution!")
 
         return cost_of_current_state, total_steps

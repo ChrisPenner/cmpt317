@@ -7,6 +7,14 @@ Point = namedtuple('Point', ['x', 'y'])
 NKP = namedtuple('NKP', ['graph', 'garage', 'capacity', 'start_state', 'goal_state'])
 State = namedtuple('State', ['packages', 'drivers'])
 
+def repr_nkp(nkp):
+    s = "NKP:\n"
+    s += 'Garage: ' + repr(nkp.garage) + '\n'
+    s += 'start packages: ' + repr(nkp.start_state.packages) + '\n'
+    s += 'end packages: ' + repr(nkp.goal_state.packages) + '\n'
+    return s
+NKP.__repr__ = repr_nkp
+
 def get_problem(size, num_drivers, num_packages, capacity, seed=None):
     """
     :size: The size of the grid will be size x size

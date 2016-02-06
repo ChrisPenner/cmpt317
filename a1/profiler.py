@@ -10,7 +10,7 @@ import cProfile, pstats
 from comparison import test_h
 
 if __name__ == "__main__":
-    problem = pg.get_problem(size=4, num_drivers=2, num_packages=5, capacity=5, seed=1)
+    problem = pg.get_problem(size=4, num_drivers=2, num_packages=3, capacity=5, seed=5)
 
     # This one runs suboptimal on h3:
     # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)

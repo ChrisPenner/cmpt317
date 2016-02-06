@@ -1,26 +1,19 @@
 #!/usr/bin/python
 
+import time
+
 from a1 import run, State
-from problem_generator import get_problem
+from problem_generator import get_problem, NKP, Point
 from heuristics import h0, h1, h2, h3
 from h4 import h4
 
 def test_heuristic(problem, heuristic):
+    t = time.time()
     cost, steps = run(problem, heuristic)
-    # print "Guess:", heuristic(problem.goal_state, problem.start_state)
-    print(heuristic.__name__, "Guess:", heuristic(problem.goal_state, problem.start_state), 'Cost:', cost, 'Steps:', steps)
+    t_end = time.time() - t
+    print(heuristic.__name__, "Heuristic Guess:", heuristic(problem.goal_state, problem.start_state), 'Cost:', cost, 'Steps:', steps, 'Time: {:.2f}s'.format(t_end))
 
-problem = get_problem(size=4, num_drivers=2, num_packages=5, capacity=5, seed=None)
+problem = get_problem(size=100, num_drivers=1, num_packages=1, capacity=10, seed=0)
+print problem
 
-# Breaks with gap-frequency 0.4
-# problem = get_problem(size=5, num_drivers=1, num_packages=4, capacity=1, seed=3)
-# test_heuristic(problem, h0)
-# test_heuristic(problem, h1)
 test_heuristic(problem, h2)
-# test_heuristic(problem, h3)
-test_heuristic(problem, h4)
-# print problem.goal_state
-
-
-# Notes:
-# h2 is suboptimal on: get_problem(size=4, num_drivers=1, num_packages=3, capacity=1, seed=0)
