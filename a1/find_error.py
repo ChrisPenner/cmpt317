@@ -14,8 +14,8 @@ while True:
 
         problem = get_problem(size=size, num_drivers=num_drivers, num_packages=num_packages, capacity=20, seed=seed)
         # a_cost, a_steps = run(problem, h2)
-        guess = h2(problem.goal_state, problem.start_state)
-        b_cost, b_steps = run(problem, h2)
+        guess = h4(problem.goal_state, problem.start_state)
+        b_cost, b_steps = run(problem, h4)
         print(size, num_drivers, num_packages, seed)
         print "Guess/cost:", guess, b_cost
         # if a_cost < b_cost:
@@ -32,4 +32,5 @@ while True:
         # break
     size += 1
     num_packages += 1
+    num_drivers += 1
 

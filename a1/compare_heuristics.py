@@ -18,10 +18,10 @@ def test_heuristic(problem, heuristic):
     print(heuristic.__name__, heuristic(problem.goal_state, problem.start_state),cost,steps, '{:.2f}s'.format(t_end), sep=" & ", end=" \\\\\n\\hline\n")
 
 options = {
-    'size'  : 10,
-    'num_drivers' : 1,
-    'num_packages' : 4,
-    'capacity' : 2,
+    'size'  : 6,
+    'num_drivers' : 7,
+    'num_packages' : 18,
+    'capacity' : 3,
     'seed' : 0,
 }
 problem = get_problem(**options)
@@ -33,9 +33,9 @@ tester = partial(test_heuristic, problem)
 # Use all available cores to compute results in parallel
 pool = Pool()
 pool.map(tester, [
-    # h0,
-    # h1,
+    h0,
+    h1,
     h2,
-    # h3,
+    h3,
     h4,
 ])
