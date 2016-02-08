@@ -21,15 +21,19 @@ def get_problem(size, num_drivers, num_packages, capacity, seed=None):
     :num_drivers: the number of drivers
     :num_packages: the number of packages
     :capacity: the carrying capacity of each driver
+    :seed: Seed the randomness
     """
     # Random point generator (within bounds)
     random_point = lambda: Point(*random.choice(graph.nodes()))
 
     random.seed(seed)
     graph = m.makeMap(size, size, 0.0) # width, height, gap frequency
+
+    # Randomly assign all packages, destinations, and garage.
     packages = tuple(random_point() for x in range(num_packages))
     destinations = tuple(random_point() for x in range(num_packages))
     garage = random_point()
+    # All drivers start on the garage.
     drivers = tuple(garage for _ in range(num_drivers))
 
     start_state = State(

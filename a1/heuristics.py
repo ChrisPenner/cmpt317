@@ -7,9 +7,11 @@ def manhattan_distance(a, b):
     return abs(ax - bx) + abs(ay - by)
 
 def packages_to_destinations(packages, destinations):
+    """ Get an iterator of the distance from packaes to their destinations """
     return (manhattan_distance(p, d) for p, d in zip(packages, destinations))
 
 def get_undelivered_packages_and_destinations(packages, destinations):
+    """ Filter out the delivered packages which we don't need to worry about """
     filtered = [ (package, destination) for (package, destination) in zip(packages, destinations) 
                 if package != destination ]
     if filtered:

@@ -75,6 +75,7 @@ class Heap(Container):
         self.past_states = set()
 
     def next(self):
+        """ Return the next state to try """
         if self.data:
             # Discard the heuristic guess, no longer needed
             estimate, cost_so_far, state = heapq.heappop(self.data)
@@ -83,6 +84,7 @@ class Heap(Container):
             return None
 
     def add(self, item):
+        """ Add the 'item' to our heap if necessary """
         cost, state = item
         # Don't add previously tried states
         if state in self.past_states:

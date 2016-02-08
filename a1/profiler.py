@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from a1 import transition, cost_of_transition
+from nkp import transition, cost_of_transition
 from heuristics import h1, h2, h3
 from h4 import h4
 from functools import partial
@@ -9,11 +9,9 @@ import time
 import cProfile, pstats
 from comparison import test_h
 
+# Run a trial and print out the profiling information.
 if __name__ == "__main__":
     problem = pg.get_problem(size=4, num_drivers=2, num_packages=3, capacity=5, seed=5)
-
-    # This one runs suboptimal on h3:
-    # problem = pg.get_problem(size=7, num_drivers=1, num_packages=3, capacity=1, seed=0)
 
     t = partial(transition, problem)
     s = partial(Searcher,

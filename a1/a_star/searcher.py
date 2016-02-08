@@ -20,9 +20,8 @@ class Searcher(object):
         self.transition_function = transition_function
         self.cost_function = cost_function
         self.data_structure = data_structure
-        self.goal_state = goal_state
-        # Total cost so far at the given "current_state"
         self.current_state = start_state
+        self.goal_state = goal_state
 
     def __call__(self):
         """

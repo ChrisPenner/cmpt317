@@ -5,7 +5,7 @@ import time
 from functools import partial
 from multiprocessing import Pool
 
-from a1 import run, State
+from nkp import run, State
 from problem_generator import get_problem, NKP, Point
 from heuristics import h0, h1, h2, h3
 from h4 import h4

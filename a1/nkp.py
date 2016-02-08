@@ -40,11 +40,8 @@ def cost_of_transition(start_state, dest_state):
     # Assume all costs are 1 for now
     return 1
 
-def print_path(states):
-    for s in states:
-        print("P: ", s.packages, "D: ", s.drivers)
-
 def run(problem, h):
+    """ Set up and run and instance of the A* search. """
     h = partial(h, problem.goal_state)
     t = partial(transition, problem)
     heap = Heap(heuristic=h)
@@ -57,14 +54,3 @@ def run(problem, h):
     )
     cost, steps = s()
     return cost, steps
-
-
-if __name__ == '__main__':
-    problem = pg.get_problem(9, 1, 1, 1, seed=0)
-    cost, steps = run(problem, h2)
-    print("Start: ")
-    print_path([problem.start_state])
-    print("Goal: ")
-    print_path([problem.goal_state])
-    print('Cost:')
-    print('Steps till optimal:', steps)

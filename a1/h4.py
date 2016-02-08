@@ -102,9 +102,5 @@ def h4(goal_state, current_state):
     ending_travel = min(manhattan_distance(destination, garage)
                         for destination in destinations)
 
-    # print 'ewns', east_dist, west_dist, north_dist#, south_dist
-    # print 'Travels:', starting_travel, ending_travel
-    # print 'eastwest offset / northsouth offset', east_west_offset, north_south_offset
-    # print 'total_offset', total_offset
-    # print 'total package distance', total_package_distance
+    # Add up all our components
     return total_package_distance + total_offset + starting_travel + ending_travel
