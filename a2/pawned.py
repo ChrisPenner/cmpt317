@@ -67,15 +67,14 @@ class GameBoard(defaultdict):
         self[to] = self[current]
         self[current] = EMPTY
 
-def get_best_move(game_board, team, minimize, depth_limit=None):
-    min_or_max = min if minimize else max
+def get_best_move(game_board, depth_limit=None, team=WHITE):
+    min_or_max = min if team==BLACK else max
     next_team = BLACK if team == WHITE else WHITE
     possible_moves = game_board.next_positions(team)
     if depth_limit == 0:
         return min_or_max((board, heuristic(board)) for board in possible_moves)
     recurse = partial(get_best_move,
                       team=next_team,
-                      minimize=(not minimize),
                       depth_limit=depth_limit-1)
 
     next_set = ((board, recurse(game_board=board)[1]) for board in possible_moves)
