@@ -85,7 +85,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states_travelled = 0
-def get_best_score(state, team, depth_limit=8):
+def get_best_score(state, team, depth_limit=8, prune=None):
     global states_travelled
     states_travelled += 1
     if depth_limit == 0:
@@ -98,13 +98,22 @@ def get_best_score(state, team, depth_limit=8):
     best_score = None
 
     for move in possible_moves:
-        score = get_best_score(move, depth_limit=depth_limit-1, team=next_team)
+        score = get_best_score(move,
+                               depth_limit=depth_limit-1,
+                               team=next_team,
+                               prune=None,
+                               )
         if best_score is None:
             best_score = score
         if minimize and score < best_score:
             best_score = score
         if not minimize and best_score < score:
             best_score = score
+        if prune is not None:
+            if minimize and best_score <= prune:
+                return best_score
+            if not minimize and best_score >= prune:
+                return best_score
     if best_score is None:
         return heuristic(state)
     return best_score
