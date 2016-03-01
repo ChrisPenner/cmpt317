@@ -5,13 +5,14 @@ from operator import itemgetter
 from functools import partial
 import re
 
-BOARD_SIZE = 4
+BOARD_SIZE = 6
 columns = range(BOARD_SIZE)
 rows = range(BOARD_SIZE)
 letters = [chr(n) for n in range(ord('A'), ord('z') + 1)]
 
 WHITE = 'w'
 BLACK = 'b'
+SPECTATOR = '-'
 EMPTY = '.'
 UP = -1
 DOWN = 1
@@ -73,6 +74,9 @@ class GameBoard(defaultdict):
             moves.append(diag_right)
         return moves
 
+    def can_move(self, team):
+        return bool(list(self.next_positions(team)))
+
     def is_in_grid(self, location):
         c, r = location
         return c in columns and r in rows
@@ -84,10 +88,7 @@ class GameBoard(defaultdict):
         else:
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
-states_travelled = 0
 def get_best_score(state, team, depth_limit=8, prune=None):
-    global states_travelled
-    states_travelled += 1
     if depth_limit == 0:
         return heuristic(state)
 
@@ -101,7 +102,7 @@ def get_best_score(state, team, depth_limit=8, prune=None):
         score = get_best_score(move,
                                depth_limit=depth_limit-1,
                                team=next_team,
-                               prune=None,
+                               prune=best_score,
                                )
         if best_score is None:
             best_score = score
@@ -119,17 +120,15 @@ def get_best_score(state, team, depth_limit=8, prune=None):
     return best_score
 
 def get_best_move(state, team):
+    print 'Thinking...'
     next_moves = list(state.next_positions(team))
     next_team = WHITE if team == BLACK else BLACK
     if not next_moves:
         return None
     compare_func = max if team == WHITE else min
-    global states_travelled
-    states_travelled = 0
     best_score, best_move = compare_func((get_best_score(move, next_team), move) 
                                 for move in next_moves)
-    print "Best Score:", best_score
-    # print states_travelled
+    print "Best Guess for Score:", best_score
     return best_move
 
 def heuristic(game_board):
@@ -143,55 +142,64 @@ def to_coord(s):
     r = int(s[1])
     return (c, r)
 
+def get_move_from_player(board):
+    board = board.copy()
+    while True:
+        inp = raw_input('> ')
+        if inp == 'exit':
+            raise Exception('Quite by user')
+        moves = move_regex.findall(inp)
+        if len(moves) != 2:
+            print "Type a move like this: 'a1 b1'"
+            continue
+        moves = [to_coord(m) for m in moves]
+        try:
+            board.move(*moves)
+            return board
+        except InvalidMove:
+            print 'Invalid Move!'
+            print "Type a move like this: 'a1 a2'"
+            continue
+
 def play():
     player = None
     while not player:
-        team_choice = raw_input('Choose a team: (w/b):\n').lower()
+        team_choice = raw_input('Choose a team: white, black, spectator:\n').lower()
         if team_choice.startswith('w'):
             player = WHITE
             print 'Good choice. You go first'
         elif team_choice.startswith('b'):
             player = BLACK
             print 'Good choice. You go second'
+        elif team_choice.startswith('s'):
+            player = SPECTATOR
         else:
-            print "Sorry, didn't get that... try 'w' or 'b'"
+            print "Sorry, didn't get that..."
     enemy = BLACK if player == WHITE else WHITE
     board = GameBoard()
     print board
-    if player == BLACK:
-        print 'Thinking...'
-        board = get_best_move(board, team=enemy)
-        print board
     while True:
-        if list(board.next_positions(player)):
-            inp = raw_input('> ')
-            if inp == 'exit':
-                return
-            moves = move_regex.findall(inp)
-            if len(moves) != 2:
-                print "Type a move like this: 'a1 b1'"
-                continue
-            moves = [to_coord(m) for m in moves]
-            try:
-                board.move(*moves)
-            except InvalidMove:
-                print 'Invalid Move!'
-                print "Type a move like this: 'a1 a2'"
-                continue
+        white_can_move =  board.can_move(WHITE)
+        if white_can_move:
+            if player == WHITE:
+                board = get_move_from_player(board)
+            else:
+                board = get_best_move(board, team=WHITE)
             print board
         else:
-            print "White has no moves, black's turn"
-        print 'Thinking...'
-        move = get_best_move(board, team=enemy)
-        if move is None and not list(board.next_positions(player)):
-            print 'No more moves!'
+            print "No moves, next turn"
+
+        black_can_move =  board.can_move(BLACK)
+        if black_can_move:
+            if player == BLACK:
+                board = get_move_from_player(board)
+            else:
+                board = get_best_move(board, team=BLACK)
+            print board
+        else:
+            print "No moves, next turn"
+        if not any([white_can_move, black_can_move]):
             break
-        else:
-            next_board = move
-            if next_board:
-                board = next_board
-            print board
-            continue
     final_score = heuristic(board)
     if final_score > 0:
         print "White won with a score of {}".format(final_score)
