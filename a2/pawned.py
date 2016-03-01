@@ -84,73 +84,40 @@ class GameBoard(defaultdict):
         else:
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
-state_count = 0
-def next_move(state, team=WHITE, depth_limit=5):
-    global state_count
-    state_count = 0
-    move, score = next(get_best_move(state, depth_limit=depth_limit, team=team, prune=None), None)
-    print 'States:', state_count
-    return move
-
-def get_best_move(state, depth_limit=None, team=WHITE, prune=None):
-    global state_count
-    state_count += 1
-    # Base condition, back out
+states_travelled = 0
+def get_best_score(state, team, depth_limit=10):
+    global states_travelled
+    states_travelled += 1
     if depth_limit == 0:
-        yield heuristic(state), state
-        return
+        return heuristic(state)
 
     minimize = True if team == BLACK else False
     min_or_max = min if minimize else max
     next_team = BLACK if team == WHITE else WHITE
-    possible_moves = list(state.next_positions(team))
-    if not possible_moves:
-        yield heuristic(state), state
-        return
+    possible_moves = state.next_positions(team)
+    best_score = None
 
-    recurse = partial(get_best_move,
-                      team=next_team,
-                      depth_limit=depth_limit-1,
-                      )
+    for move in possible_moves:
+        score = get_best_score(move, depth_limit=depth_limit-1, team=next_team)
+        if best_score is None:
+            best_score = score
+        if minimize and score < best_score:
+            best_score = score
+        if not minimize and best_score < score:
+            best_score = score
+    return best_score
 
-    # If we can't prune, then just min/max the whole lot and get the best
-    if prune is None:
-        best_score = None
-        for move in possible_moves:
-            results = list(recurse(state=move, prune=prune))
-            if not results:
-                continue
-            result = min_or_max(results)
-            score, move = result
-            if best_score is None:
-                best_score = score
-            if minimize and score < best_score:
-                best_score = score
-            if not minimize and best_score < score:
-                best_score = score
-            # if prune is None:
-            #     prune = score
-            # elif minimize and score < prune:
-            #     prune = score
-            # elif not minimize and score > prune:
-            #     prune = score
-        yield best_score, state
-        return
-
-    # The pruning break condition depends on whether we're on max or min
-    if minimize:
-        break_out_cond = lambda x: x <= prune
-    else:
-        break_out_cond = lambda x: x >= prune
-
-    nexts = (n for n in recurse(state=state) for state in possible_moves)
-
-    for (score, board) in nexts:
-        # Be smart and quit if we're going to get pruned
-        if break_out_cond(score):
-            return
-        else:
-            yield score, board
+def get_best_move(state, team):
+    next_moves = list(state.next_positions(team))
+    if not next_moves:
+        return None
+    compare_func = max if team == WHITE else min
+    global states_travelled
+    states_travelled = 0
+    _, best_move = compare_func((get_best_score(move, team), move) 
+                                for move in next_moves)
+    print states_travelled
+    return best_move
 
 def heuristic(game_board):
     num_pieces = Counter(game_board.itervalues())
@@ -167,23 +134,26 @@ def play():
     board = GameBoard()
     print board
     while True:
-        inp = raw_input('> ')
-        if inp == 'exit':
-            return
-        moves = move_regex.findall(inp)
-        if len(moves) != 2:
-            print "Type a move like this: 'a1 b1'"
-            continue
-        moves = [to_coord(m) for m in moves]
-        try:
-            board.move(*moves)
-        except InvalidMove:
-            print 'Invalid Move!'
-            print "Type a move like this: 'a1 a2'"
-            continue
-        print board
-        move = next_move(board, team=BLACK, depth_limit=10)
-        if not move and not board.next_positions(WHITE):
+        if list(board.next_positions(WHITE)):
+            inp = raw_input('> ')
+            if inp == 'exit':
+                return
+            moves = move_regex.findall(inp)
+            if len(moves) != 2:
+                print "Type a move like this: 'a1 b1'"
+                continue
+            moves = [to_coord(m) for m in moves]
+            try:
+                board.move(*moves)
+            except InvalidMove:
+                print 'Invalid Move!'
+                print "Type a move like this: 'a1 a2'"
+                continue
+            print board
+        else:
+            print "White has no moves, black's turn"
+        move = get_best_move(board, team=BLACK)
+        if move is None and not list(board.next_positions(WHITE)):
             print 'No more moves!'
             break
         else:
