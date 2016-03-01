@@ -85,7 +85,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states_travelled = 0
-def get_best_score(state, team, depth_limit=10):
+def get_best_score(state, team, depth_limit=8):
     global states_travelled
     states_travelled += 1
     if depth_limit == 0:
@@ -105,18 +105,22 @@ def get_best_score(state, team, depth_limit=10):
             best_score = score
         if not minimize and best_score < score:
             best_score = score
+    if best_score is None:
+        return heuristic(state)
     return best_score
 
 def get_best_move(state, team):
     next_moves = list(state.next_positions(team))
+    next_team = WHITE if team == BLACK else BLACK
     if not next_moves:
         return None
     compare_func = max if team == WHITE else min
     global states_travelled
     states_travelled = 0
-    _, best_move = compare_func((get_best_score(move, team), move) 
+    best_score, best_move = compare_func((get_best_score(move, next_team), move) 
                                 for move in next_moves)
-    print states_travelled
+    print "Best Score:", best_score
+    # print states_travelled
     return best_move
 
 def heuristic(game_board):
@@ -131,10 +135,26 @@ def to_coord(s):
     return (c, r)
 
 def play():
+    player = None
+    while not player:
+        team_choice = raw_input('Choose a team: (w/b):\n').lower()
+        if team_choice.startswith('w'):
+            player = WHITE
+            print 'Good choice. You go first'
+        elif team_choice.startswith('b'):
+            player = BLACK
+            print 'Good choice. You go second'
+        else:
+            print "Sorry, didn't get that... try 'w' or 'b'"
+    enemy = BLACK if player == WHITE else WHITE
     board = GameBoard()
     print board
+    if player == BLACK:
+        print 'Thinking...'
+        board = get_best_move(board, team=enemy)
+        print board
     while True:
-        if list(board.next_positions(WHITE)):
+        if list(board.next_positions(player)):
             inp = raw_input('> ')
             if inp == 'exit':
                 return
@@ -152,8 +172,9 @@ def play():
             print board
         else:
             print "White has no moves, black's turn"
-        move = get_best_move(board, team=BLACK)
-        if move is None and not list(board.next_positions(WHITE)):
+        print 'Thinking...'
+        move = get_best_move(board, team=enemy)
+        if move is None and not list(board.next_positions(player)):
             print 'No more moves!'
             break
         else:
@@ -162,6 +183,13 @@ def play():
                 board = next_board
             print board
             continue
+    final_score = heuristic(board)
+    if final_score > 0:
+        print "White won with a score of {}".format(final_score)
+    elif final_score < 0:
+        print "Black won with a score of {}".format(abs(final_score))
+    else:
+        print "It was a draw!"
 
 if __name__ == '__main__':
     play()
