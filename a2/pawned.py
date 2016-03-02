@@ -88,7 +88,7 @@ class GameBoard(defaultdict):
         else:
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
-def get_best_score(state, team, depth_limit=8, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=8, prune=None):
     if depth_limit == 0:
         return heuristic(state)
 
@@ -102,6 +102,7 @@ def get_best_score(state, team, depth_limit=8, prune=None):
         score = get_best_score(move,
                                depth_limit=depth_limit-1,
                                team=next_team,
+                               heuristic=heuristic,
                                prune=best_score,
                                )
         if best_score is None:
@@ -119,23 +120,17 @@ def get_best_score(state, team, depth_limit=8, prune=None):
         return heuristic(state)
     return best_score
 
-def get_best_move(state, team):
+def get_best_move(state, team, heuristic):
     print 'Thinking...'
     next_moves = list(state.next_positions(team))
     next_team = WHITE if team == BLACK else BLACK
     if not next_moves:
         return None
     compare_func = max if team == WHITE else min
-    best_score, best_move = compare_func((get_best_score(move, next_team), move) 
+    best_score, best_move = compare_func((get_best_score(move, next_team, heuristic), move) 
                                 for move in next_moves)
     print "Best Guess for Score:", best_score
     return best_move
-
-def heuristic(game_board):
-    num_pieces = Counter(game_board.itervalues())
-    white = num_pieces[WHITE]
-    black = num_pieces[BLACK]
-    return white - black
 
 def to_coord(s):
     c = ord(s[0].lower()) - ord('a')
@@ -184,7 +179,7 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE)
+                board = get_best_move(board, team=WHITE, heuristic=h2)
             print board
         else:
             print "No moves, next turn"
@@ -194,19 +189,50 @@ def play():
             if player == BLACK:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=BLACK)
+                board = get_best_move(board, team=BLACK, heuristic=h1)
             print board
         else:
             print "No moves, next turn"
         if not any([white_can_move, black_can_move]):
             break
-    final_score = heuristic(board)
+    final_score = h1(board)
     if final_score > 0:
         print "White won with a score of {}".format(final_score)
     elif final_score < 0:
         print "Black won with a score of {}".format(abs(final_score))
     else:
         print "It was a draw!"
+
+# Heuristics...
+def h1(board):
+    num_pieces = Counter(board.itervalues())
+    white = num_pieces[WHITE]
+    black = num_pieces[BLACK]
+    return white - black
+
+def h2(board):
+    num_pieces = Counter(board.itervalues())
+    white = num_pieces[WHITE]
+    black = num_pieces[BLACK]
+    difference = white - black
+    positioning_score = 0
+
+    for location, piece in board.items():
+        if piece == EMPTY:
+            continue
+        c, r = location
+        points = 0
+
+        if board[(c + 1, r + 1)] == piece:
+            points += 1
+        if board[(c - 1, r + 1)] == piece:
+            points += 1
+
+        if piece == WHITE:
+            positioning_score += points
+        else:
+            positioning_score -= points
+    return (difference, positioning_score)
 
 if __name__ == '__main__':
     play()
