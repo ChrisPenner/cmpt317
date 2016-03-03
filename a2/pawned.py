@@ -5,7 +5,7 @@ from operator import itemgetter
 from functools import partial
 import re
 
-BOARD_SIZE = 6
+BOARD_SIZE = 4
 columns = range(BOARD_SIZE)
 rows = range(BOARD_SIZE)
 letters = [chr(n) for n in range(ord('A'), ord('z') + 1)]
@@ -44,6 +44,9 @@ class GameBoard(defaultdict):
     __repr__ = __str__
 
     def next_positions(self, team):
+        if has_winner(self) != 0:
+            return
+
         direction = DOWN if team == WHITE else UP
         enemy = WHITE if team == BLACK else BLACK
         our_pieces = [location for (location, value) in self.iteritems()
@@ -179,10 +182,13 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE, heuristic=h2)
+                board = get_best_move(board, team=WHITE, heuristic=h3)
             print board
         else:
             print "No moves, next turn"
+
+        if has_winner(board) != 0:
+            break
 
         black_can_move =  board.can_move(BLACK)
         if black_can_move:
@@ -195,6 +201,17 @@ def play():
             print "No moves, next turn"
         if not any([white_can_move, black_can_move]):
             break
+
+        if has_winner(board) != 0:
+            break
+
+    if has_winner(board) == 1:
+         print "White won"
+         return
+    elif has_winner(board) == -1:
+         print "Black won"
+         return
+
     final_score = h1(board)
     if final_score > 0:
         print "White won with a score of {}".format(final_score)
@@ -233,6 +250,32 @@ def h2(board):
         else:
             positioning_score -= points
     return (difference, positioning_score)
+
+
+def has_winner(board):
+    points = 0
+    first = 0
+    last = rows[-1]
+
+    for c in columns:
+        if board[(c,first)] == BLACK:
+            points -= 1
+        if board[(c,last)] == WHITE:
+            points += 1
+    return points
+
+
+def h3(board):
+    num_pieces = Counter(board.itervalues())
+    white = num_pieces[WHITE]
+    black = num_pieces[BLACK]
+    points = white - black
+
+    points2 = has_winner(board)
+
+    return (points2, points)
+
+
 
 if __name__ == '__main__':
     play()
