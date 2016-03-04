@@ -105,7 +105,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states = 0
-def get_best_score(state, team, heuristic, depth_limit=5, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
     global states
     states += 1
     if depth_limit == 0:
@@ -201,7 +201,7 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE, heuristic=h3)
+                board = get_best_move(board, team=WHITE, heuristic=h4)
             print board
         else:
             print "No moves, next turn"
@@ -214,7 +214,7 @@ def play():
             if player == BLACK:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=BLACK, heuristic=h1)
+                board = get_best_move(board, team=BLACK, heuristic=h3)
             print board
         else:
             print "No moves, next turn"
@@ -270,8 +270,10 @@ def h2(board):
             positioning_score -= points
     return (difference, positioning_score)
 
-
 def h3(board):
+    return board.has_winner()
+
+def h4(board):
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
