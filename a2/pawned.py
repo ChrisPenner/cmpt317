@@ -100,7 +100,6 @@ def get_best_score(state, team, heuristic, depth_limit=5, prune=None):
         return heuristic(state)
 
     minimize = True if team == BLACK else False
-    min_or_max = min if minimize else max
     next_team = BLACK if team == WHITE else WHITE
     possible_moves = state.next_positions(team)
     best_score = None
