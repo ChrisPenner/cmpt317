@@ -43,9 +43,21 @@ class GameBoard(defaultdict):
 
     # Print the same way
     __repr__ = __str__
+    
+    def has_winner(self):
+        points = 0
+        first = 0
+        last = rows[-1]
+
+        for c in columns:
+            if self[(c,first)] == BLACK:
+                points -= 1
+            if self[(c,last)] == WHITE:
+                points += 1
+        return points
 
     def next_positions(self, team):
-        if has_winner(self) != 0:
+        if self.has_winner() != 0:
             return
 
         direction = DOWN if team == WHITE else UP
@@ -93,7 +105,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states = 0
-def get_best_score(state, team, heuristic, depth_limit=5, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
     global states
     states += 1
     if depth_limit == 0:
@@ -188,12 +200,12 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE, heuristic=h3)
+                board = get_best_move(board, team=WHITE, heuristic=h5)
             print board
         else:
             print "No moves, next turn"
 
-        if has_winner(board) != 0:
+        if board.has_winner() != 0:
             break
 
         black_can_move =  board.can_move(BLACK)
@@ -201,20 +213,20 @@ def play():
             if player == BLACK:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=BLACK, heuristic=h1)
+                board = get_best_move(board, team=BLACK, heuristic=h5)
             print board
         else:
             print "No moves, next turn"
         if not any([white_can_move, black_can_move]):
             break
 
-        if has_winner(board) != 0:
+        if board.has_winner() != 0:
             break
 
-    if has_winner(board) == 1:
+    if board.has_winner() == 1:
          print "White won"
          return
-    elif has_winner(board) == -1:
+    elif board.has_winner() == -1:
          print "Black won"
          return
 
@@ -257,27 +269,22 @@ def h2(board):
             positioning_score -= points
     return (difference, positioning_score)
 
-
-def has_winner(board):
-    points = 0
-    first = 0
-    last = rows[-1]
-
-    for c in columns:
-        if board[(c,first)] == BLACK:
-            points -= 1
-        if board[(c,last)] == WHITE:
-            points += 1
-    return points
-
-
 def h3(board):
+    return board.has_winner()
+
+def h4(board):
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
     points = white - black
 
-    points2 = has_winner(board)
+    points2 = board.has_winner()
+
+    return (points2, points)
+
+def h5(board):
+    points = h2(board)
+    points2 = board.has_winner()
 
     return (points2, points)
 
