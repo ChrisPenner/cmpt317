@@ -201,7 +201,7 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE, heuristic=h4)
+                board = get_best_move(board, team=WHITE, heuristic=h5)
             print board
         else:
             print "No moves, next turn"
@@ -214,7 +214,7 @@ def play():
             if player == BLACK:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=BLACK, heuristic=h3)
+                board = get_best_move(board, team=BLACK, heuristic=h5)
             print board
         else:
             print "No moves, next turn"
@@ -279,6 +279,12 @@ def h4(board):
     black = num_pieces[BLACK]
     points = white - black
 
+    points2 = board.has_winner()
+
+    return (points2, points)
+
+def h5(board):
+    points = h2(board)
     points2 = board.has_winner()
 
     return (points2, points)
