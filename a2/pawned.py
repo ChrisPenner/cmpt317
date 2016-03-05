@@ -6,7 +6,7 @@ from functools import partial
 import re
 import time
 
-BOARD_SIZE = 5
+BOARD_SIZE = 6
 columns = range(BOARD_SIZE)
 rows = range(BOARD_SIZE)
 letters = [chr(n) for n in range(ord('A'), ord('z') + 1)]
@@ -24,6 +24,7 @@ class InvalidMove(Exception): pass
 
 class GameBoard(defaultdict):
     def __init__(self, state=None):
+        """ Set up the board to the starting state. """
         if state:
             super(GameBoard, self).__init__(lambda : EMPTY, state)
         else:
@@ -36,6 +37,7 @@ class GameBoard(defaultdict):
         return GameBoard(state=self)
 
     def __str__(self):
+        """ Print out the board in a human readable form"""
         s = '  ' + ' '.join(letters[c] for c in columns) + '\n'
         for r in rows:
             row = ' '.join(self[(c, r)] for c in columns)
@@ -46,6 +48,7 @@ class GameBoard(defaultdict):
     __repr__ = __str__
     
     def has_winner(self):
+        """ Return a 1 if white has won, -1 if black has won, 0 otherwise"""
         points = 0
         first = 0
         last = rows[-1]
@@ -58,6 +61,7 @@ class GameBoard(defaultdict):
         return points
 
     def next_positions(self, team):
+        """ A generator yielding all possible next game boards for 'team'"""
         if self.has_winner() != 0:
             return
 
@@ -73,6 +77,7 @@ class GameBoard(defaultdict):
                 yield new_state
 
     def valid_moves(self, location):
+        """ A generator yielding all possible next valid moves for the piece at 'location'"""
         c, r = location
         piece = self[location]
         if piece == EMPTY:
@@ -92,13 +97,16 @@ class GameBoard(defaultdict):
         return moves
 
     def can_move(self, team):
+        """ Returns whether moves exist for 'team'"""
         return bool(list(self.next_positions(team)))
 
     def is_in_grid(self, location):
+        """ Returns whether location is on the board"""
         c, r = location
         return c in columns and r in rows
 
     def move(self, current, to):
+        """ Moves the piece at current -> to"""
         if to in self.valid_moves(current):
             self[to] = self[current]
             self[current] = EMPTY
@@ -106,7 +114,12 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states = 0
-def get_best_score(state, team, heuristic, depth_limit=8, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
+        """ 
+        Recursively searches returns the best possible score we can find by
+        starting at 'state' given a team, heuristic and depth_limit.
+        Does alpha-beta pruning when possible.
+        """
     global states
     states += 1
     if depth_limit == 0:
@@ -140,6 +153,9 @@ def get_best_score(state, team, heuristic, depth_limit=8, prune=None):
     return best_score
 
 def get_best_move(state, team, heuristic):
+    """
+    Returns a board state representing the 'move' that the AI would like to make
+    """
     print 'Thinking...'
     next_moves = list(state.next_positions(team))
     next_team = WHITE if team == BLACK else BLACK
@@ -155,11 +171,13 @@ def get_best_move(state, team, heuristic):
     return best_move
 
 def to_coord(s):
+    """ Changes a 'a2' string into a (column, row) coordinate """
     c = ord(s[0].lower()) - ord('a')
     r = int(s[1])
     return (c, r)
 
 def get_move_from_player(board):
+    """ Prompts the user for a move and returns the resultant game board """
     board = board.copy()
     while True:
         inp = raw_input('> ')
@@ -179,6 +197,7 @@ def get_move_from_player(board):
             continue
 
 def play():
+    """ Kicks off a command line interface for the game. """
     player = None
     while not player:
         team_choice = raw_input('Choose a team: white, black, spectator:\n').lower()
@@ -245,12 +264,22 @@ def play():
 
 # Heuristics...
 def h1(board):
+    """ 
+    Simply counts the number of pieces each team has and returns the difference
+    Heuristics are positive when white is doing well, negative when black is doing well.
+    """
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
     return white - black
 
 def h2(board):
+    """ 
+    Counts difference between number of pieces but also gives a positioning score
+    for each team. The score is better when the player has pieces aligned diagonally
+    from each other.
+    Heuristics are positive when white is doing well, negative when black is doing well.
+    """
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
@@ -275,9 +304,15 @@ def h2(board):
     return (difference, positioning_score)
 
 def h3(board):
+    """ 
+    Simply returns whether some team has won the game in this board state.
+    """
     return board.has_winner()
 
 def h4(board):
+    """ 
+    Combines h1 and h3 into one heuristic
+    """
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
@@ -288,9 +323,11 @@ def h4(board):
     return (points2, points)
 
 def h5(board):
+    """ 
+    Combines h1, h2 and h3 into one heuristic
+    """
     points = h2(board)
     points2 = board.has_winner()
-
     return (points2, points)
 
 
