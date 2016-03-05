@@ -115,11 +115,11 @@ class GameBoard(defaultdict):
 
 states = 0
 def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
-        """ 
-        Recursively searches returns the best possible score we can find by
-        starting at 'state' given a team, heuristic and depth_limit.
-        Does alpha-beta pruning when possible.
-        """
+    """ 
+    Recursively searches returns the best possible score we can find by
+    starting at 'state' given a team, heuristic and depth_limit.
+    Does alpha-beta pruning when possible.
+    """
     global states
     states += 1
     if depth_limit == 0:
@@ -137,6 +137,7 @@ def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
                                heuristic=heuristic,
                                prune=best_score,
                                )
+        # This is where pruning happens
         if best_score is None:
             best_score = score
         if minimize and score < best_score:
@@ -221,7 +222,7 @@ def play():
                 board = get_move_from_player(board)
             else:
                 t = time.time()
-                board = get_best_move(board, team=WHITE, heuristic=h3)
+                board = get_best_move(board, team=WHITE, heuristic=h1)
                 print "Took {} seconds".format(time.time() - t)
             print board
         else:
@@ -236,7 +237,7 @@ def play():
                 board = get_move_from_player(board)
             else:
                 t = time.time()
-                board = get_best_move(board, team=BLACK, heuristic=h3)
+                board = get_best_move(board, team=BLACK, heuristic=h2)
                 print "Took {} seconds".format(time.time() - t)
             print board
         else:
@@ -262,30 +263,14 @@ def play():
     else:
         print "It was a draw!"
 
-# Heuristics...
-def h1(board):
-    """ 
-    Simply counts the number of pieces each team has and returns the difference
-    Heuristics are positive when white is doing well, negative when black is doing well.
-    """
+def get_piece_difference(board):
     num_pieces = Counter(board.itervalues())
     white = num_pieces[WHITE]
     black = num_pieces[BLACK]
     return white - black
 
-def h2(board):
-    """ 
-    Counts difference between number of pieces but also gives a positioning score
-    for each team. The score is better when the player has pieces aligned diagonally
-    from each other.
-    Heuristics are positive when white is doing well, negative when black is doing well.
-    """
-    num_pieces = Counter(board.itervalues())
-    white = num_pieces[WHITE]
-    black = num_pieces[BLACK]
-    difference = white - black
+def get_positioning_score(board):
     positioning_score = 0
-
     for location, piece in board.items():
         if piece == EMPTY:
             continue
@@ -301,6 +286,25 @@ def h2(board):
             positioning_score += points
         else:
             positioning_score -= points
+        return positioning_score
+
+# Heuristics...
+def h1(board):
+    """ 
+    Simply counts the number of pieces each team has and returns the difference
+    Heuristics are positive when white is doing well, negative when black is doing well.
+    """
+    return get_piece_difference(board)
+
+def h2(board):
+    """ 
+    Counts difference between number of pieces but also gives a positioning score
+    for each team. The score is better when the player has pieces aligned diagonally
+    from each other.
+    Heuristics are positive when white is doing well, negative when black is doing well.
+    """
+    difference = get_piece_difference(board)
+    positioning_score = get_positioning_score(board)
     return (difference, positioning_score)
 
 def h3(board):
@@ -313,24 +317,16 @@ def h4(board):
     """ 
     Combines h1 and h3 into one heuristic
     """
-    num_pieces = Counter(board.itervalues())
-    white = num_pieces[WHITE]
-    black = num_pieces[BLACK]
-    points = white - black
-
-    points2 = board.has_winner()
-
-    return (points2, points)
+    return (board.has_winner(), get_piece_difference(board))
 
 def h5(board):
     """ 
     Combines h1, h2 and h3 into one heuristic
     """
-    points = h2(board)
-    points2 = board.has_winner()
-    return (points2, points)
-
-
+    difference = get_piece_difference(board)
+    positioning_score = get_positioning_score(board)
+    winner_score = board.has_winner()
+    return (winner_score, difference, positioning_score)
 
 if __name__ == '__main__':
     play()
