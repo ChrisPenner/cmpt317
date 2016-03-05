@@ -4,6 +4,7 @@ from collections import defaultdict, Counter
 from operator import itemgetter
 from functools import partial
 import re
+import time
 
 BOARD_SIZE = 5
 columns = range(BOARD_SIZE)
@@ -105,7 +106,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states = 0
-def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=8, prune=None):
     global states
     states += 1
     if depth_limit == 0:
@@ -200,7 +201,9 @@ def play():
             if player == WHITE:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=WHITE, heuristic=h5)
+                t = time.time()
+                board = get_best_move(board, team=WHITE, heuristic=h3)
+                print "Took {} seconds".format(time.time() - t)
             print board
         else:
             print "No moves, next turn"
@@ -213,7 +216,9 @@ def play():
             if player == BLACK:
                 board = get_move_from_player(board)
             else:
-                board = get_best_move(board, team=BLACK, heuristic=h5)
+                t = time.time()
+                board = get_best_move(board, team=BLACK, heuristic=h3)
+                print "Took {} seconds".format(time.time() - t)
             print board
         else:
             print "No moves, next turn"
