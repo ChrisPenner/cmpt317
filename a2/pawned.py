@@ -114,7 +114,7 @@ class GameBoard(defaultdict):
             raise InvalidMove("Invalid Move: {}".format((current, to)))
 
 states = 0
-def get_best_score(state, team, heuristic, depth_limit=6, prune=None):
+def get_best_score(state, team, heuristic, depth_limit=8, prune=None):
     """ 
     Recursively searches returns the best possible score we can find by
     starting at 'state' given a team, heuristic and depth_limit.
@@ -222,7 +222,7 @@ def play():
                 board = get_move_from_player(board)
             else:
                 t = time.time()
-                board = get_best_move(board, team=WHITE, heuristic=h1)
+                board = get_best_move(board, team=WHITE, heuristic=h3)
                 print "Took {} seconds".format(time.time() - t)
             print board
         else:
@@ -237,7 +237,7 @@ def play():
                 board = get_move_from_player(board)
             else:
                 t = time.time()
-                board = get_best_move(board, team=BLACK, heuristic=h2)
+                board = get_best_move(board, team=BLACK, heuristic=h3)
                 print "Took {} seconds".format(time.time() - t)
             print board
         else:

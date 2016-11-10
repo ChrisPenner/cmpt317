@@ -1,0 +1,253 @@
+Choose a team: white, black, spectator:
+b
+Good choice. You go second
+  A B C D E F
+0 w w w w w w
+1 . . . . . .
+2 . . . . . .
+3 . . . . . .
+4 . . . . . .
+5 b b b b b b
+
+Thinking...
+Total States Checked: 557296
+Best Guess for Score: (0, 0, 1)
+Took 19.5814509392 seconds
+  A B C D E F
+0 w w w w . w
+1 . . . . w .
+2 . . . . . .
+3 . . . . . .
+4 . . . . . .
+5 b b b b b b
+
+> a5 a4
+  A B C D E F
+0 w w w w . w
+1 . . . . w .
+2 . . . . . .
+3 . . . . . .
+4 b . . . . .
+5 . b b b b b
+
+Thinking...
+Total States Checked: 779611
+Best Guess for Score: (0, 0, 2)
+Took 28.1122410297 seconds
+  A B C D E F
+0 w w . w . w
+1 . . w . w .
+2 . . . . . .
+3 . . . . . .
+4 b . . . . .
+5 . b b b b b
+
+> a4 a3
+  A B C D E F
+0 w w . w . w
+1 . . w . w .
+2 . . . . . .
+3 b . . . . .
+4 . . . . . .
+5 . b b b b b
+
+Thinking...
+Total States Checked: 481004
+Best Guess for Score: (0, 0, 2)
+Took 17.529168129 seconds
+  A B C D E F
+0 w . . w . w
+1 . w w . w .
+2 . . . . . .
+3 b . . . . .
+4 . . . . . .
+5 . b b b b b
+
+> b5 b4
+  A B C D E F
+0 w . . w . w
+1 . w w . w .
+2 . . . . . .
+3 b . . . . .
+4 . b . . . .
+5 . . b b b b
+
+Thinking...
+Total States Checked: 740129
+Best Guess for Score: (0, 0, 2)
+Took 24.9906709194 seconds
+  A B C D E F
+0 w . . w . .
+1 . w w . w w
+2 . . . . . .
+3 b . . . . .
+4 . b . . . .
+5 . . b b b b
+
+> b4 b3
+  A B C D E F
+0 w . . w . .
+1 . w w . w w
+2 . . . . . .
+3 b b . . . .
+4 . . . . . .
+5 . . b b b b
+
+Thinking...
+Total States Checked: 549564
+Best Guess for Score: (0, 0, 1)
+Took 18.6485500336 seconds
+  A B C D E F
+0 w . . w . .
+1 . w w . w .
+2 . . . . . w
+3 b b . . . .
+4 . . . . . .
+5 . . b b b b
+
+> a3 a2
+  A B C D E F
+0 w . . w . .
+1 . w w . w .
+2 b . . . . w
+3 . b . . . .
+4 . . . . . .
+5 . . b b b b
+
+Thinking...
+Total States Checked: 814336
+Best Guess for Score: (0, 0, 1)
+Took 27.5882508755 seconds
+  A B C D E F
+0 w . . w . .
+1 . . w . w .
+2 w . . . . w
+3 . b . . . .
+4 . . . . . .
+5 . . b b b b
+
+> b3 a2
+  A B C D E F
+0 w . . w . .
+1 . . w . w .
+2 b . . . . w
+3 . . . . . .
+4 . . . . . .
+5 . . b b b b
+
+Thinking...
+Total States Checked: 74143
+Best Guess for Score: (0, 0, 1)
+Took 2.61869502068 seconds
+  A B C D E F
+0 w . . w . .
+1 . . w . . .
+2 b . . . w w
+3 . . . . . .
+4 . . . . . .
+5 . . b b b b
+
+> a2 a1
+  A B C D E F
+0 w . . w . .
+1 b . w . . .
+2 . . . . w w
+3 . . . . . .
+4 . . . . . .
+5 . . b b b b
+
+Thinking...
+Total States Checked: 36476
+Best Guess for Score: (0, 0, 1)
+Took 1.38805508614 seconds
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . w w
+3 . . . . . .
+4 . . . . . .
+5 . . b b b b
+
+> c5 c4
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . w w
+3 . . . . . .
+4 . . b . . .
+5 . . . b b b
+
+Thinking...
+Total States Checked: 47739
+Best Guess for Score: (0, 0, 0)
+Took 1.71601700783 seconds
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . w .
+3 . . . . . w
+4 . . b . . .
+5 . . . b b b
+
+> c4 c3
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . w .
+3 . . b . . w
+4 . . . . . .
+5 . . . b b b
+
+Thinking...
+Total States Checked: 15574
+Best Guess for Score: (0, 0, 0)
+Took 0.464897871017 seconds
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . . .
+3 . . b . w w
+4 . . . . . .
+5 . . . b b b
+
+> d5 d4
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . . .
+3 . . b . w w
+4 . . . b . .
+5 . . . . b b
+
+Thinking...
+Total States Checked: 11741
+Best Guess for Score: (1, 0, 0)
+Took 0.671484947205 seconds
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . . .
+3 . . b . w .
+4 . . . b . w
+5 . . . . b b
+
+> e5 f4
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . . .
+3 . . b . w .
+4 . . . b . b
+5 . . . . . b
+
+Thinking...
+Total States Checked: 6565
+Best Guess for Score: (1, 0, 0)
+Took 0.20507979393 seconds
+  A B C D E F
+0 w . . . . .
+1 b . w w . .
+2 . . . . . .
+3 . . b . . .
+4 . . . w . b
+5 . . . . . b
