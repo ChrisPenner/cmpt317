@@ -277,16 +277,18 @@ def get_positioning_score(board):
         c, r = location
         points = 0
 
-        if board[(c + 1, r + 1)] == piece:
-            points += 1
-        if board[(c - 1, r + 1)] == piece:
-            points += 1
-
         if piece == WHITE:
-            positioning_score += points
-        else:
-            positioning_score -= points
-        return positioning_score
+            if board[(c + 1, r + 1)] == piece:
+                points += 1
+            if board[(c - 1, r + 1)] == piece:
+                points += 1
+
+        if piece == BLACK:
+            if board[(c + 1, r - 1)] == piece:
+                points -= 1
+            if board[(c - 1, r - 1)] == piece:
+                points -= 1
+        return points
 
 # Heuristics...
 def h1(board):
